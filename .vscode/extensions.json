@@ -1,0 +1,9 @@
+{
+  // See https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_workspace-recommended-extensions
+  "recommendations": [
+    "ms-python.python", // Core Python support
+    "astral-dreamer.ruff", // Ruff linter/formatter
+    "detachhead.basedpyright", // BasedPyright type checker
+    "ms-pytest.pytest", // pytest test runner
+  ]
+}
