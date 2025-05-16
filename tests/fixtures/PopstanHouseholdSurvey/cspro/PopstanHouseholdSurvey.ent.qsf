@@ -1,0 +1,154 @@
+---
+fileType: Question Text
+version: CSPro 8.0
+languages:
+- name: EN
+  label: English
+styles:
+- name: Normal
+  className: normal
+  css: 'font-family: Arial;font-size: 16px;'
+- name: Instruction
+  className: instruction
+  css: 'font-family: Arial;font-size: 14px;color: #0000FF;'
+- name: Heading 1
+  className: heading1
+  css: 'font-family: Arial;font-size: 36px;'
+- name: Heading 2
+  className: heading2
+  css: 'font-family: Arial;font-size: 24px;'
+- name: Heading 3
+  className: heading3
+  css: 'font-family: Arial;font-size: 18px;'
+questions:
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.PROVINCE
+  conditions:
+  - questionText:
+      EN: <p>Province</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.DISTRICT
+  conditions:
+  - questionText:
+      EN: <p>District</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.CLUSTER
+  conditions:
+  - questionText:
+      EN: <p>Cluster</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.HOUSEHOLD_NUMBER
+  conditions:
+  - questionText:
+      EN: <p>Household Number</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.INTERVIEW_DATE
+  conditions:
+  - questionText:
+      EN: <p>Interview Date</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.INTERVIEWER_NAME
+  conditions:
+  - questionText:
+      EN: <p>Interviewer Name</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.INTERVIEWER_CODE
+  conditions:
+  - questionText:
+      EN: <p>Interviewer Code</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NAME
+  conditions:
+  - questionText:
+      EN: <p>First and last name</p><p><span class="instruction">List all individuals,
+        starting with the head of household, who share common arrangements for meals.
+        Complete B01 for all household members before starting B02.</span></p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.SEX
+  conditions:
+  - questionText:
+      EN: <p>Is (name) male or female?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.RELATIONSHIP_TO_HEAD
+  conditions:
+  - questionText:
+      EN: <p>What is (name)'s relationship to the head of household?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.CELL_PHONE
+  conditions:
+  - questionText:
+      EN: <p>Does (name) have a working cell phone?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.PHONE_NUMBER
+  conditions:
+  - questionText:
+      EN: <p>What is (name)'s cell phone number?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.AGE
+  conditions:
+  - questionText:
+      EN: <p>How old is (name)?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.DATE_OF_BIRTH
+  conditions:
+  - questionText:
+      EN: <p>When was (name) born?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.LANGUAGE
+  conditions:
+  - questionText:
+      EN: <p>What language does (name) usually speak at home?</p><p><span class="instruction">For
+        age 5 and above</span></p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.EVER_ATTENDED_SCHOOL
+  conditions:
+  - questionText:
+      EN: <p>Has (name) ever attended school?</p><p><span class="instruction">If 1
+        or 9 skip to C03</span></p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.HIGHEST_LEVEL_OF_EDUCATION_COMPLETED
+  conditions:
+  - questionText:
+      EN: <p>What is the highest level of formal education that (name) has completed?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.LITERACY
+  conditions:
+  - questionText:
+      EN: <p>Does (name) know how to read or write in any language?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUMBER_OF_ROOMS_MAIN_DWELLING
+  conditions:
+  - questionText:
+      EN: <p>How many rooms are in the main dwelling?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUMBER_OF_BEDROOMS_MAIN_DWELLING
+  conditions:
+  - questionText:
+      EN: <p>How many bedrooms are in the main dwelling?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.TYPE_OF_MAIN_DWELLING
+  conditions:
+  - questionText:
+      EN: <p>What is the type of the main dwelling?</p>
+    helpText:
+      EN: ''
+...

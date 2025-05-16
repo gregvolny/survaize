@@ -1,0 +1,427 @@
+{
+  "title": "Popstan Household Survey",
+  "description": "This questionnaire is designed to illustrate various methods using CSPro.",
+  "id_fields": [
+    "province",
+    "district",
+    "cluster",
+    "household_number"
+  ],
+  "sections": [
+    {
+      "id": "section_a_identification",
+      "number": "A",
+      "title": "Identification",
+      "description": null,
+      "universe": null,
+      "questions": [
+        {
+          "number": "A1",
+          "id": "province",
+          "text": "Province",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 9.0,
+          "decimal_places": null
+        },
+        {
+          "number": "A2",
+          "id": "district",
+          "text": "District",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 99.0,
+          "decimal_places": null
+        },
+        {
+          "number": "A3",
+          "id": "cluster",
+          "text": "Cluster",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 999.0,
+          "decimal_places": null
+        },
+        {
+          "number": "A4",
+          "id": "household_number",
+          "text": "Household Number",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 999.0,
+          "decimal_places": null
+        },
+        {
+          "number": "A5",
+          "id": "interview_date",
+          "text": "Interview Date",
+          "instructions": null,
+          "universe": null,
+          "type": "date",
+          "min_date": null,
+          "max_date": null
+        },
+        {
+          "number": "A6",
+          "id": "interviewer_name",
+          "text": "Interviewer Name",
+          "instructions": null,
+          "universe": null,
+          "type": "text",
+          "max_length": null
+        },
+        {
+          "number": "A7",
+          "id": "interviewer_code",
+          "text": "Interviewer Code",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 999.0,
+          "decimal_places": null
+        }
+      ],
+      "occurrences": 1
+    },
+    {
+      "id": "section_b_household_roster",
+      "number": "B",
+      "title": "Household Roster",
+      "description": "List all individuals, starting with the head of household, who share common arrangements for meals. Complete B01 for all household members before starting B02.",
+      "universe": "All household members",
+      "questions": [
+        {
+          "number": "B01",
+          "id": "name",
+          "text": "First and last name",
+          "instructions": "List all individuals, starting with the head of household, who share common arrangements for meals. Complete B01 for all household members before starting B02.",
+          "universe": null,
+          "type": "text",
+          "max_length": null
+        },
+        {
+          "number": "B02",
+          "id": "sex",
+          "text": "Is (name) male or female?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Male"
+            },
+            {
+              "code": "2",
+              "label": "Female"
+            }
+          ]
+        },
+        {
+          "number": "B03",
+          "id": "relationship_to_head",
+          "text": "What is (name)'s relationship to the head of household?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Head"
+            },
+            {
+              "code": "2",
+              "label": "Spouse"
+            },
+            {
+              "code": "3",
+              "label": "Child"
+            },
+            {
+              "code": "4",
+              "label": "Grandchild"
+            },
+            {
+              "code": "5",
+              "label": "Sister/brother"
+            },
+            {
+              "code": "6",
+              "label": "Father/mother"
+            },
+            {
+              "code": "7",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "number": "B04",
+          "id": "cell_phone",
+          "text": "Does (name) have a working cell phone?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Yes"
+            },
+            {
+              "code": "2",
+              "label": "No (skip to B07)"
+            }
+          ]
+        },
+        {
+          "number": "B05",
+          "id": "phone_number",
+          "text": "What is (name)'s cell phone number?",
+          "instructions": null,
+          "universe": null,
+          "type": "text",
+          "max_length": null
+        },
+        {
+          "number": "B06",
+          "id": "age",
+          "text": "How old is (name)?",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": null,
+          "decimal_places": null
+        },
+        {
+          "number": "B07",
+          "id": "date_of_birth",
+          "text": "When was (name) born?",
+          "instructions": null,
+          "universe": null,
+          "type": "date",
+          "min_date": null,
+          "max_date": null
+        },
+        {
+          "number": "B08",
+          "id": "language",
+          "text": "What language does (name) usually speak at home?",
+          "instructions": "For age 5 and above",
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "English"
+            },
+            {
+              "code": "2",
+              "label": "French"
+            },
+            {
+              "code": "3",
+              "label": "Spanish"
+            },
+            {
+              "code": "4",
+              "label": "Other specify"
+            }
+          ]
+        }
+      ],
+      "occurrences": 5
+    },
+    {
+      "id": "section_c_education",
+      "number": "C",
+      "title": "Education",
+      "description": null,
+      "universe": "For all persons aged 3 and above",
+      "questions": [
+        {
+          "number": "C01",
+          "id": "ever_attended_school",
+          "text": "Has (name) ever attended school?",
+          "instructions": "If 1 or 9 skip to C03",
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Yes"
+            },
+            {
+              "code": "2",
+              "label": "No"
+            },
+            {
+              "code": "9",
+              "label": "Don't know"
+            }
+          ]
+        },
+        {
+          "number": "C02",
+          "id": "highest_level_of_education_completed",
+          "text": "What is the highest level of formal education that (name) has completed?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "00",
+              "label": "Pre-school"
+            },
+            {
+              "code": "01",
+              "label": "Standard 1"
+            },
+            {
+              "code": "02",
+              "label": "Standard 2"
+            },
+            {
+              "code": "03",
+              "label": "Standard 3"
+            },
+            {
+              "code": "04",
+              "label": "Standard 4"
+            },
+            {
+              "code": "05",
+              "label": "Standard 5"
+            },
+            {
+              "code": "06",
+              "label": "Standard 6"
+            },
+            {
+              "code": "07",
+              "label": "Standard 7"
+            },
+            {
+              "code": "08",
+              "label": "Standard 8"
+            },
+            {
+              "code": "09",
+              "label": "Form 1"
+            },
+            {
+              "code": "10",
+              "label": "Form 2"
+            },
+            {
+              "code": "11",
+              "label": "Form 3"
+            },
+            {
+              "code": "12",
+              "label": "Form 4"
+            },
+            {
+              "code": "13",
+              "label": "University"
+            },
+            {
+              "code": "14",
+              "label": "Graduate"
+            }
+          ]
+        },
+        {
+          "number": "C03",
+          "id": "literacy",
+          "text": "Does (name) know how to read or write in any language?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Yes"
+            },
+            {
+              "code": "2",
+              "label": "No"
+            }
+          ]
+        }
+      ],
+      "occurrences": 8
+    },
+    {
+      "id": "section_d_housing",
+      "number": "D",
+      "title": "Housing",
+      "description": null,
+      "universe": null,
+      "questions": [
+        {
+          "number": "D01",
+          "id": "number_of_rooms_main_dwelling",
+          "text": "How many rooms are in the main dwelling?",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 99.0,
+          "decimal_places": null
+        },
+        {
+          "number": "D02",
+          "id": "number_of_bedrooms_main_dwelling",
+          "text": "How many bedrooms are in the main dwelling?",
+          "instructions": null,
+          "universe": null,
+          "type": "numeric",
+          "min_value": null,
+          "max_value": 99.0,
+          "decimal_places": null
+        },
+        {
+          "number": "D03",
+          "id": "type_of_main_dwelling",
+          "text": "What is the type of the main dwelling?",
+          "instructions": null,
+          "universe": null,
+          "type": "single_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Traditional round hut"
+            },
+            {
+              "code": "2",
+              "label": "Detached house"
+            },
+            {
+              "code": "3",
+              "label": "Semi-detached house"
+            },
+            {
+              "code": "4",
+              "label": "Flat/apartment"
+            },
+            {
+              "code": "5",
+              "label": "Improvised (kiosk/container)"
+            }
+          ]
+        }
+      ],
+      "occurrences": 1
+    }
+  ]
+}

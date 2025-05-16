@@ -1,5 +1,3 @@
-__all__ = (  # noqa: F405
-    # TODO: Add all public symbols here.
-)
+"""Survaize - Convert PDF questionnaires to digital survey instruments."""
 
-from .survaize import *  # noqa: F403
+__version__ = "0.1.0"

@@ -19,9 +19,7 @@ dynamic = ["version"]
 # https://pypi.org/classifiers/
 # Adjust as needed:
 classifiers = [
-    # Adjust as needed:
-    "Development Status :: 4 - Beta",
-    # "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
@@ -38,6 +36,15 @@ classifiers = [
 # ---- Main dependencies ----
 
 dependencies = [
+    "click>=8.1.8",
+    "openai>=1.77.0",
+    "opencv-python>=4.11.0.86",
+    "pdf2image>=1.17.0",
+    "pillow>=11.2.1",
+    "pydantic>=2.11.4",
+    "pytesseract>=0.3.13",
+    "python-dotenv>=1.1.0",
+    "pyyaml>=6.0.2",
 ]
 
 
@@ -55,7 +62,7 @@ dev = [
 
 [project.scripts]
 # Add script entry points here:
-survaize = "survaize:main"
+survaize = "survaize.main:cli"
 
 
 # ---- Build system ----
@@ -87,7 +94,7 @@ packages = ["src/survaize"]
 
 [tool.ruff]
 # Set as desired, typically 88 (black standard) or 100 (wide).
-line-length = 100
+line-length = 120
 
 [tool.ruff.lint]
 select = [
@@ -137,6 +144,8 @@ reportUnnecessaryTypeIgnoreComment = false
 # How many you enable is up to you. The first few are off by default, but you can
 # comment/uncomment these as desired:
 reportMissingTypeStubs = false
+enableTypeIgnoreComments = true
+reportUnusedCallResult = false
 
 [tool.codespell]
 # Add here as needed:

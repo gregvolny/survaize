@@ -1,0 +1,901 @@
+{
+  "software": "CSPro",
+  "version": 8.0,
+  "fileType": "dictionary",
+  "name": "POPSTAN_HOUSEHOLD_SURVEY_DICT",
+  "labels": [
+    {
+      "text": "Popstan Household Survey Dictionary"
+    }
+  ],
+  "readOptimization": true,
+  "recordType": {
+    "start": 1,
+    "length": 1
+  },
+  "defaults": {
+    "decimalMark": true,
+    "zeroFill": true
+  },
+  "relativePositions": true,
+  "levels": [
+    {
+      "name": "POPSTAN_HOUSEHOLD_SURVEY_LEVEL",
+      "labels": [
+        {
+          "text": "Popstan Household Survey Level"
+        }
+      ],
+      "ids": {
+        "items": [
+          {
+            "name": "PROVINCE",
+            "labels": [
+              {
+                "text": "A1 Province"
+              }
+            ],
+            "contentType": "numeric",
+            "length": 1,
+            "zeroFill": true
+          },
+          {
+            "name": "DISTRICT",
+            "labels": [
+              {
+                "text": "A2 District"
+              }
+            ],
+            "contentType": "numeric",
+            "length": 2,
+            "zeroFill": true
+          },
+          {
+            "name": "CLUSTER",
+            "labels": [
+              {
+                "text": "A3 Cluster"
+              }
+            ],
+            "contentType": "numeric",
+            "length": 3,
+            "zeroFill": true
+          },
+          {
+            "name": "HOUSEHOLD_NUMBER",
+            "labels": [
+              {
+                "text": "A4 Household Number"
+              }
+            ],
+            "contentType": "numeric",
+            "length": 3,
+            "zeroFill": true
+          }
+        ]
+      },
+      "records": [
+        {
+          "name": "SECTION_A_IDENTIFICATION_REC",
+          "labels": [
+            {
+              "text": "A Section A Identification"
+            }
+          ],
+          "recordType": "A",
+          "occurrences": {
+            "required": false,
+            "maximum": 1
+          },
+          "items": [
+            {
+              "name": "INTERVIEW_DATE",
+              "labels": [
+                {
+                  "text": "A5 Interview Date"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 8,
+              "zeroFill": true
+            },
+            {
+              "name": "INTERVIEWER_NAME",
+              "labels": [
+                {
+                  "text": "A6 Interviewer Name"
+                }
+              ],
+              "contentType": "alpha",
+              "length": 100
+            },
+            {
+              "name": "INTERVIEWER_CODE",
+              "labels": [
+                {
+                  "text": "A7 Interviewer Code"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 3,
+              "zeroFill": true
+            }
+          ]
+        },
+        {
+          "name": "SECTION_B_HOUSEHOLD_ROSTER_REC",
+          "labels": [
+            {
+              "text": "B Section B Household Roster"
+            }
+          ],
+          "recordType": "B",
+          "occurrences": {
+            "required": false,
+            "maximum": 5
+          },
+          "items": [
+            {
+              "name": "NAME",
+              "labels": [
+                {
+                  "text": "B01 Name"
+                }
+              ],
+              "contentType": "alpha",
+              "length": 100
+            },
+            {
+              "name": "SEX",
+              "labels": [
+                {
+                  "text": "B02 Sex"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "SEX_VS1",
+                  "labels": [
+                    {
+                      "text": "B02 Sex"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Male"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Female"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "RELATIONSHIP_TO_HEAD",
+              "labels": [
+                {
+                  "text": "B03 Relationship To Head"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "RELATIONSHIP_TO_HEAD_VS1",
+                  "labels": [
+                    {
+                      "text": "B03 Relationship To Head"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Head"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Spouse"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Child"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "3"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Grandchild"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Sister/brother"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "5"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Father/mother"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "6"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Other"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "7"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CELL_PHONE",
+              "labels": [
+                {
+                  "text": "B04 Cell Phone"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "CELL_PHONE_VS1",
+                  "labels": [
+                    {
+                      "text": "B04 Cell Phone"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Yes"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "No (skip to B07)"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "PHONE_NUMBER",
+              "labels": [
+                {
+                  "text": "B05 Phone Number"
+                }
+              ],
+              "contentType": "alpha",
+              "length": 100
+            },
+            {
+              "name": "AGE",
+              "labels": [
+                {
+                  "text": "B06 Age"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 15,
+              "zeroFill": true
+            },
+            {
+              "name": "DATE_OF_BIRTH",
+              "labels": [
+                {
+                  "text": "B07 Date Of Birth"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 8,
+              "zeroFill": true
+            },
+            {
+              "name": "LANGUAGE",
+              "labels": [
+                {
+                  "text": "B08 Language"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "LANGUAGE_VS1",
+                  "labels": [
+                    {
+                      "text": "B08 Language"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "English"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "French"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Spanish"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "3"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Other specify"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "4"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SECTION_C_EDUCATION_REC",
+          "labels": [
+            {
+              "text": "C Section C Education"
+            }
+          ],
+          "recordType": "C",
+          "occurrences": {
+            "required": false,
+            "maximum": 8
+          },
+          "items": [
+            {
+              "name": "EVER_ATTENDED_SCHOOL",
+              "labels": [
+                {
+                  "text": "C01 Ever Attended School"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "EVER_ATTENDED_SCHOOL_VS1",
+                  "labels": [
+                    {
+                      "text": "C01 Ever Attended School"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Yes"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "No"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Don't know"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "9"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "HIGHEST_LEVEL_OF_EDUCATION_COMPLETED",
+              "labels": [
+                {
+                  "text": "C02 Highest Level Of Education Completed"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 2,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "HIGHEST_LEVEL_OF_EDUCATION_COMPLETED_VS1",
+                  "labels": [
+                    {
+                      "text": "C02 Highest Level Of Education Completed"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Pre-school"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "00"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 1"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "01"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 2"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "02"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 3"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "03"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 4"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "04"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 5"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "05"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 6"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "06"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 7"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "07"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Standard 8"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "08"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Form 1"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "09"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Form 2"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "10"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Form 3"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "11"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Form 4"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "12"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "University"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "13"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Graduate"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "14"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "LITERACY",
+              "labels": [
+                {
+                  "text": "C03 Literacy"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "LITERACY_VS1",
+                  "labels": [
+                    {
+                      "text": "C03 Literacy"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Yes"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "No"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SECTION_D_HOUSING_REC",
+          "labels": [
+            {
+              "text": "D Section D Housing"
+            }
+          ],
+          "recordType": "D",
+          "occurrences": {
+            "required": false,
+            "maximum": 1
+          },
+          "items": [
+            {
+              "name": "NUMBER_OF_ROOMS_MAIN_DWELLING",
+              "labels": [
+                {
+                  "text": "D01 Number Of Rooms Main Dwelling"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 2,
+              "zeroFill": true
+            },
+            {
+              "name": "NUMBER_OF_BEDROOMS_MAIN_DWELLING",
+              "labels": [
+                {
+                  "text": "D02 Number Of Bedrooms Main Dwelling"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 2,
+              "zeroFill": true
+            },
+            {
+              "name": "TYPE_OF_MAIN_DWELLING",
+              "labels": [
+                {
+                  "text": "D03 Type Of Main Dwelling"
+                }
+              ],
+              "contentType": "numeric",
+              "length": 1,
+              "zeroFill": true,
+              "valueSets": [
+                {
+                  "name": "TYPE_OF_MAIN_DWELLING_VS1",
+                  "labels": [
+                    {
+                      "text": "D03 Type Of Main Dwelling"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Traditional round hut"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Detached house"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Semi-detached house"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "3"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Flat/apartment"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Improvised (kiosk/container)"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "5"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
