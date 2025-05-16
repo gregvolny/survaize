@@ -176,4 +176,32 @@ cython_debug/
 #.idea/
 
 # PyPI configuration file
-.pypirc
+.pypir
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS folder attributes
+Icon?
+._*
+
+# macOS Finder tags
+.metadata_never_index
+.fseventsd
+
+# Spotlight search index
+.Spotlight-V100
+
+# Trash folder
+.Trashes
+
+# macOS Time Machine
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# macOS Dropbox conflict files
+*.icloud
+c
