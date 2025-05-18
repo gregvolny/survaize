@@ -14,13 +14,19 @@ Survaize is a tool that automatically converts "paper" questionnaires into inter
 Eventually this will be published to PyPy but for now follow the instructions in [installation.md](installation.md).
 
 ## Setup
-Survaize requires an AzureOpenAI API deployment. There are two ways to specify the settings. The easiest way is to create a .env with the following variables:
+Survaize requires an OpenAI API key. You can specify it using the --api-key parameter or by setting in the OPENAI_API_KEY environment variable.
+
+If you do not already have an account on the [OpenAI developer platform](https://platform.openai.com/docs/overview) you will need to sign up to get a key.
+
+Survaize should also work with other LLM providers that have OpenAI compatible APIs by providing the appropriate API URL and model name via the --api-url and --api-model arguments or the OPENAI_API_URL and OPENAI_MODEL environment variables. Note that only LLMs that support vision will work.
+
+To use Azure OpenAI you will need to specify the key, URL, API version and deployment name. For example:
 
 ```
 OPENAI_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXX"
-OPENAI_API_VERSION="2024-12-01-preview"
+OPENAI_API_VERSION="2025-04-01-preview"
 OPENAI_API_URL="https://myazuredeploy-openai.openai.azure.com/"
-OPENAI_API_DEPLOYMENT="gpt-4.1"
+OPENAI_API_DEPLOYMENT="my-gpt-4.1-deployment"
 ```
 
 Alternatively, you can pass those variables as command line arguments to survaize (run `survaize --help` for details).
@@ -61,7 +67,6 @@ For instructions on publishing to PyPI, see [publishing.md](publishing.md).
 MIT 
 
 ## TODO
-- Support other LLM APIs besides Azure OpenAI
 - Add a fix loop to handle case when LLM produces invalid JSON
 - Use question type from Questionnaire to set capture type in CSPro to handle dates correctly
 - Correctly handle location question type (produce two fields in CSPro)
