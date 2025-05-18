@@ -3,7 +3,6 @@ from pathlib import Path
 from survaize.reader.json_reader import JSONReader
 from survaize.writer.cspro_writer import CSProWriter
 
-
 test_data_dir = Path(__file__).parent / "fixtures" / "PopstanHouseholdSurvey"
 cspro_fixture_dir = test_data_dir / "cspro"
 json_fixture_file = test_data_dir / "PopstanHouseholdQuestionnaire.json"

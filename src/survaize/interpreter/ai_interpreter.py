@@ -5,14 +5,14 @@ import json
 import logging
 from io import BytesIO
 
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletionContentPartImageParam,
     ChatCompletionContentPartTextParam,
 )
 from PIL import Image
 
-from survaize.config.llm_config import LLMConfig
+from survaize.config.llm_config import LLMConfig, OpenAIProviderType
 from survaize.interpreter.scanned_questionnaire import ScannedQuestionnaire
 from survaize.model.questionnaire import PartialQuestionnaire, Questionnaire, merge_questionnaires
 
@@ -30,12 +30,18 @@ class AIQuestionnaireInterpreter:
             llm_config: Configuration/keys for the OpenAI API
         """
         self.llm_config: LLMConfig = llm_config
-        # TODO: Add support OpenAI API without Azure
-        self.client: AzureOpenAI = AzureOpenAI(
-            api_key=llm_config.api_key,
-            api_version=llm_config.api_version,
-            azure_endpoint=llm_config.api_url,
-        )
+        if llm_config.provider == OpenAIProviderType.AZURE:
+            assert llm_config.api_url is not None
+            self.client: OpenAI | AzureOpenAI = AzureOpenAI(
+                api_key=llm_config.api_key,
+                api_version=llm_config.api_version,
+                azure_endpoint=llm_config.api_url,
+            )
+        else:  # default to openai client
+            self.client = OpenAI(
+                api_key=llm_config.api_key,
+                base_url=llm_config.api_url,
+            )
 
     def interpret(self, scanned_document: ScannedQuestionnaire) -> Questionnaire:
         """Interpret a questionnaire document into a structured format.
@@ -90,9 +96,8 @@ class AIQuestionnaireInterpreter:
         ]
 
         response = self.client.chat.completions.create(
-            model=self.llm_config.api_deployment,
+            model=self.llm_config.model,
             messages=[{"role": "user", "content": content}],
-            max_tokens=4000,
             response_format={"type": "json_object"},
         )
 
@@ -145,9 +150,8 @@ class AIQuestionnaireInterpreter:
 
         # Make the API call with structured output
         response = self.client.chat.completions.create(
-            model=self.llm_config.api_deployment,
+            model=self.llm_config.model,
             messages=[{"role": "user", "content": content}],
-            max_tokens=4000,
             response_format={"type": "json_object"},
         )
 
