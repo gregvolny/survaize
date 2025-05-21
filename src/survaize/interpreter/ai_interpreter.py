@@ -3,14 +3,17 @@
 import base64
 import json
 import logging
+from collections.abc import Iterable
 from io import BytesIO
+from typing import TypeVar
 
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import (
-    ChatCompletionContentPartImageParam,
-    ChatCompletionContentPartTextParam,
+    ChatCompletionContentPartParam,
+    ChatCompletionMessageParam,
 )
 from PIL import Image
+from pydantic import BaseModel
 
 from survaize.config.llm_config import LLMConfig, OpenAIProviderType
 from survaize.interpreter.scanned_questionnaire import ScannedQuestionnaire
@@ -19,11 +22,13 @@ from survaize.model.questionnaire import PartialQuestionnaire, Questionnaire, me
 # Configure logger
 logger = logging.getLogger(__name__)
 
+STRUCTURED_RESPONSE_TYPE = TypeVar("STRUCTURED_RESPONSE_TYPE", bound="BaseModel")
+
 
 class AIQuestionnaireInterpreter:
     """Interprets questionnaire documents using LLM vision models."""
 
-    def __init__(self, llm_config: LLMConfig):
+    def __init__(self, llm_config: LLMConfig, max_retries: int = 10):
         """Initialize the interpreter.
 
         Args:
@@ -42,6 +47,7 @@ class AIQuestionnaireInterpreter:
                 api_key=llm_config.api_key,
                 base_url=llm_config.api_url,
             )
+        self.max_retries: int = max_retries
 
     def interpret(self, scanned_document: ScannedQuestionnaire) -> Questionnaire:
         """Interpret a questionnaire document into a structured format.
@@ -79,38 +85,27 @@ class AIQuestionnaireInterpreter:
         Args:
             image: PIL Image of the page
             ocr_text: OCR extracted text from the page
+
+        Returns:
+            Questionnaire: A structured representation of the questionnaire
+
+        Raises:
+            ValueError: If unable to interpret the questionnaire after max retry attempts
         """
         # Encode image for API
         base64_image = self._encode_image(image)
 
+        # Initialize conversation history
         prompt = self._create_vision_prompt(1)
-        content = [
-            ChatCompletionContentPartTextParam({"type": "text", "text": prompt}),
-            ChatCompletionContentPartImageParam(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/png;base64,{base64_image}"},
-                }
-            ),
-            ChatCompletionContentPartTextParam({"type": "text", "text": f"OCR Text:\n{ocr_text}"}),
+        message: Iterable[ChatCompletionContentPartParam] = [
+            {"type": "text", "text": prompt},
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+            },
+            {"type": "text", "text": f"OCR Text:\n{ocr_text}"},
         ]
-
-        response = self.client.chat.completions.create(
-            model=self.llm_config.model,
-            messages=[{"role": "user", "content": content}],
-            response_format={"type": "json_object"},
-        )
-
-        try:
-            response_str = response.choices[0].message.content
-            if not response_str:
-                raise ValueError(f"Refusal from OpenAI: {response.choices[0].message.refusal}")
-            return Questionnaire.model_validate(json.loads(response_str))
-
-        except Exception as e:
-            logger.error(f"Error processing page {1}: {e}")
-            logger.error(f"Raw response: {response}")
-            raise
+        return self._get_structured_llm_response(message, Questionnaire)
 
     def _process_subsequent_page(
         self,
@@ -126,45 +121,95 @@ class AIQuestionnaireInterpreter:
             image: PIL Image of the page
             ocr_text: OCR extracted text from the page
             page_number: Current page number
+            questionnaire_so_far: The questionnaire compiled from previous pages
+
+        Returns:
+            PartialQuestionnaire: A partial questionnaire containing only elements from this page
+
+        Raises:
+            ValueError: If unable to interpret the page after max retry attempts
         """
         # Encode image for API
         base64_image = self._encode_image(image)
 
+        # Initialize conversation
         prompt = self._create_vision_prompt(page_number)
-        content = [
-            ChatCompletionContentPartTextParam({"type": "text", "text": prompt}),
-            ChatCompletionContentPartImageParam(
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/png;base64,{base64_image}"},
-                }
-            ),
-            ChatCompletionContentPartTextParam({"type": "text", "text": f"OCR Text:\n{ocr_text}"}),
-            ChatCompletionContentPartTextParam(
-                {
-                    "type": "text",
-                    "text": f"Questionnaire from previous pages:\n{questionnaire_so_far.model_dump_json(indent=2)}",
-                }
-            ),
+        message: Iterable[ChatCompletionContentPartParam] = [
+            {"type": "text", "text": prompt},
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+            },
+            {"type": "text", "text": f"OCR Text:\n{ocr_text}"},
+            {
+                "type": "text",
+                "text": f"Questionnaire from previous pages:\n{questionnaire_so_far.model_dump_json(indent=2)}",
+            },
         ]
+        return self._get_structured_llm_response(message, PartialQuestionnaire)
 
-        # Make the API call with structured output
-        response = self.client.chat.completions.create(
-            model=self.llm_config.model,
-            messages=[{"role": "user", "content": content}],
-            response_format={"type": "json_object"},
-        )
+    def _get_structured_llm_response(
+        self, message: Iterable[ChatCompletionContentPartParam], response_type: type[STRUCTURED_RESPONSE_TYPE]
+    ) -> STRUCTURED_RESPONSE_TYPE:
+        """Get structured response from LLM by asking LLM to fix validation errors in a loop.
+        Args:
+            message: Message to send to the LLM
+            response_type: Type of the expected structured response
+        Returns:
+            Structured response of the specified type
+        Raises:
+            ValueError: If unable to validate the response after max retry attempts
+        """
 
-        try:
+        # Track conversation to maintain context during retries
+        messages: list[ChatCompletionMessageParam] = [{"role": "user", "content": message}]
+
+        # Set max retries to avoid infinite loops
+        attempt = 0
+
+        while True:
+            attempt += 1
+
+            # Make API call
+            response = self.client.chat.completions.create(
+                model=self.llm_config.model,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+
+            # Extract content
             response_str = response.choices[0].message.content
             if not response_str:
                 raise ValueError(f"Refusal from OpenAI: {response.choices[0].message.refusal}")
-            return PartialQuestionnaire.model_validate(json.loads(response_str))
 
-        except Exception as e:
-            logger.error(f"Error processing page {page_number}: {e}")
-            logger.error(f"Raw response: {response}")
-            raise
+            # Add assistant's response to conversation history
+            messages.append({"role": "assistant", "content": response_str})
+
+            try:
+                # Try to validate the response
+                validated_response = response_type.model_validate(json.loads(response_str))
+                return validated_response
+
+            except Exception as e:
+                if attempt >= self.max_retries:
+                    logger.error(f"Max retries ({self.max_retries}) reached. Last error: {e}")
+                    logger.error(f"Raw response: {response}")
+                    raise ValueError(f"Unable to validate response after {self.max_retries} attempts: {e}") from e
+
+                # Prepare error feedback for the model
+                error_prompt = f"""
+                Your previous response had validation errors:
+                
+                Error: {str(e)}
+                
+                Please fix the JSON structure to conform to the PartialQuestionnaire schema. Ensure all required fields 
+                are present and correctly typed. Return only the corrected JSON.
+                """
+
+                # Add error feedback to conversation history
+                messages.append({"role": "user", "content": error_prompt})
+
+                logger.info(f"Validation failed, attempt {attempt}: {e}. Retrying...")
 
     def _encode_image(self, image: Image.Image) -> str:
         """Encode a PIL image to base64.
@@ -323,10 +368,10 @@ class AIQuestionnaireInterpreter:
                   the code and label for each response
                 - numeric questions will have a minimum and maximum value which can be inferred based 
                   on the number of digits represented as boxes next to or under the question, if there is no information
-                  to infer the minimum and maximum values, leave them blank
+                  to infer the minimum and maximum values, omit them from the output
                 - text questions will have a maximum length which can be inferred based on the number of boxes next to
-                  or under the question, if there is no information to infer the maximum 
-                length, leave it blank
+                  or under the question, if there is no information to infer the maximum length, omit the field from the 
+                  output
             5. Identify the id-fields for the questionnaire. These must be a subset of the ids from questions in the
                questionnaire. They are usually at the start of the questionnaire and combined will uniquely identify
                the questionnaire. They are often geographic identifiers, household identifiers, or respondent
@@ -372,9 +417,10 @@ class AIQuestionnaireInterpreter:
                   the code and label for each response
                 - numeric questions will have a minimum and maximum value which can be inferred based 
                   on the number of digits represented as boxes next to or under the question, if there is no 
-                  information to infer the minimum and maximum values, leave them blank
+                  information to infer the minimum and maximum values, omit them from the output
                 - text questions will have a maximum length which can be inferred based on the number of boxes next to
-                  or under the question, if there is no information to infer the maximum length, leave it blank
+                  or under the question, if there is no information to infer the maximum length, omit the field from the
+                  output
 
             Here is an example of the output you should produce:
             ```json

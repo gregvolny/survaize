@@ -146,6 +146,7 @@ reportUnnecessaryTypeIgnoreComment = false
 reportMissingTypeStubs = false
 enableTypeIgnoreComments = true
 reportUnusedCallResult = false
+reportAny = false
 
 [tool.codespell]
 # Add here as needed:
