@@ -374,6 +374,7 @@ class CSProWriter:
 
     def _create_items_form(
         self,
+        questionnaire: Questionnaire,  # Added questionnaire argument
         items: list[DictionaryItem],
         form_number: int,
         form_name: str,
@@ -409,6 +410,16 @@ class CSProWriter:
         max_label_length = max(len(item.labels[0].text) for item in items)
         label_width = max_label_length * LABEL_CHAR_SIZE + LABEL_WIDTH_PADDING
         for item in items:
+            # Find the corresponding question from the questionnaire
+            current_question: Question | None = None
+            for section in questionnaire.sections:
+                for question_in_section in section.questions:
+                    if self._to_dictionary_name(question_in_section.id) == item.name:
+                        current_question = question_in_section
+                        break
+                if current_question:
+                    break
+
             label_x = 50
             field_text_label = FormText(
                 name=f"{item.name}_LABEL",
@@ -418,7 +429,15 @@ class CSProWriter:
                 text=item.labels[0].text,
                 position=(label_x, row, label_x + label_width, row + FIELD_HEIGHT),
             )
-            capture_type = FormItemCaptureType.RADIO_BUTTON if item.valueSets else FormItemCaptureType.TEXT_BOX
+
+            # Determine capture_type based on QuestionType
+            if current_question and current_question.type == QuestionType.DATE:
+                capture_type = FormItemCaptureType.DATE
+            elif item.valueSets:
+                capture_type = FormItemCaptureType.RADIO_BUTTON
+            else:
+                capture_type = FormItemCaptureType.TEXT_BOX
+
             field_x = label_x + label_width
             field_width = item.length * FIELD_WIDTH_CHAR_SIZE
             field = FormField(
@@ -438,7 +457,7 @@ class CSProWriter:
         return form, group
 
     def _create_roster_form(
-        self, record: DictionaryRecord, form_number: int, form_name: str, label: str
+        self, questionnaire: Questionnaire, record: DictionaryRecord, form_number: int, form_name: str, label: str
     ) -> tuple[Form, FormGroup]:
         """Helper to create a roster form and group for a record with multiple occurrences."""
         roster_name = self._replace_suffix(record.name, "_REC", "_ROSTER")
@@ -472,6 +491,16 @@ class CSProWriter:
             roster.stub_text.append(stub_text)
         roster.columns.append(RosterColumn(width=10))
         for item in record.items:
+            # Find the corresponding question from the questionnaire
+            current_question: Question | None = None
+            for section in questionnaire.sections:
+                for question_in_section in section.questions:
+                    if self._to_dictionary_name(question_in_section.id) == item.name:
+                        current_question = question_in_section
+                        break
+                if current_question:
+                    break
+
             header_text = FormText(
                 name=f"{item.name}_HEADER",
                 label=item.labels[0].text,
@@ -481,7 +510,15 @@ class CSProWriter:
                 position=None,
             )
             column = RosterColumn(header_text=header_text, fields=[])
-            capture_type = FormItemCaptureType.RADIO_BUTTON if item.valueSets else FormItemCaptureType.TEXT_BOX
+
+            # Determine capture_type based on QuestionType
+            if current_question and current_question.type == QuestionType.DATE:
+                capture_type = FormItemCaptureType.DATE
+            elif item.valueSets:
+                capture_type = FormItemCaptureType.RADIO_BUTTON
+            else:
+                capture_type = FormItemCaptureType.TEXT_BOX
+
             field = FormField(
                 name=item.name,
                 label=item.labels[0].text,
@@ -524,8 +561,9 @@ class CSProWriter:
         id_items = level.ids.items
         form_name = "ID_ITEMS_FORM"
         form_number += 1
+        # Pass questionnaire to _create_items_form
         id_form, id_group = self._create_items_form(
-            id_items, form_number, form_name, "Id Items", required=True, max_occurs=1
+            questionnaire, id_items, form_number, form_name, "Id Items", required=True, max_occurs=1
         )
         forms.append(id_form)
         groups.append(id_group)
@@ -536,9 +574,14 @@ class CSProWriter:
             label = record.labels[0].text
             is_roster = record.occurrences.maximum > 1
             if is_roster:
-                record_form, record_group = self._create_roster_form(record, form_number, form_name, label)
+                # Pass questionnaire to _create_roster_form
+                record_form, record_group = self._create_roster_form(
+                    questionnaire, record, form_number, form_name, label
+                )
             else:
+                # Pass questionnaire to _create_items_form
                 record_form, record_group = self._create_items_form(
+                    questionnaire,
                     record.items,
                     form_number,
                     form_name,
