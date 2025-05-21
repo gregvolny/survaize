@@ -370,8 +370,8 @@ class AIQuestionnaireInterpreter:
                   on the number of digits represented as boxes next to or under the question, if there is no information
                   to infer the minimum and maximum values, omit them from the output
                 - text questions will have a maximum length which can be inferred based on the number of boxes next to
-                  or under the question, if there is no information to infer the maximum length, omit the field from the 
-                  output
+                  or under the question, if there is no information to infer the maximum length, omit the field from 
+                  the output
             5. Identify the id-fields for the questionnaire. These must be a subset of the ids from questions in the
                questionnaire. They are usually at the start of the questionnaire and combined will uniquely identify
                the questionnaire. They are often geographic identifiers, household identifiers, or respondent
