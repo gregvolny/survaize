@@ -1,6 +1,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Literal
 
 from survaize.cspro.dictionary import (
     CSProDictionary,
@@ -61,11 +62,11 @@ class CSProWriter:
         logger.info(f"Generating CSPro application in: {app_dir}")
 
         # Generate all required CSPro files
-        dictionary = self._generate_data_dictionary(questionnaire)
+        dictionary, dict_item_to_question = self._generate_data_dictionary(questionnaire)
         dictionary_file_name = f"{app_file_name}.dcf"
         dictionary.save(app_dir / dictionary_file_name)
 
-        form_file = self._generate_form_file(dictionary, dictionary_file_name)
+        form_file = self._generate_form_file(dictionary, dictionary_file_name, dict_item_to_question)
         form_file.save(app_dir / f"{app_file_name}.fmf")
         self._generate_logic_file(questionnaire, app_dir / f"{app_file_name}.ent.apc")
         qsf_file = self._generate_question_text_file(questionnaire, dictionary.name)
@@ -88,7 +89,7 @@ class CSProWriter:
         sanitized = "".join(c if c.isalnum() else "" for c in name)
         return sanitized
 
-    def _generate_data_dictionary(self, questionnaire: Questionnaire) -> CSProDictionary:
+    def _generate_data_dictionary(self, questionnaire: Questionnaire) -> tuple[CSProDictionary, dict[str, Question]]:
         """Generate the CSPro data dictionary from the questionnaire.
 
         Args:
@@ -96,7 +97,7 @@ class CSProWriter:
             output_path: Path to save the generated file
 
         Returns:
-            The generated CSPro dictionary
+            The generated CSPro dictionary and a mapping of dictionary item to question that it was created from
         """
         logger.info("Generating data dictionary")
 
@@ -105,6 +106,8 @@ class CSProWriter:
 
         # Create a dictionary level (CSPro dictionaries can have multiple levels, but we use only one)
         level_name = self._to_dictionary_name(f"{questionnaire.title}_LEVEL")
+
+        dict_item_to_question: dict[str, Question] = {}
 
         # Create dictionary to track ID questions for easy lookup
         id_question_ids = set(questionnaire.id_fields)
@@ -117,6 +120,7 @@ class CSProWriter:
             for question in section.questions:
                 if question.id in id_question_ids:
                     id_item = self._question_to_dictionary_item(question)
+                    dict_item_to_question[id_item.name] = question
                     id_items.append(id_item)
 
         # Create records for each section (excluding empty sections)
@@ -137,6 +141,7 @@ class CSProWriter:
             for question in section.questions:
                 if question.id not in id_question_ids:
                     item = self._question_to_dictionary_item(question)
+                    dict_item_to_question[item.name] = question
                     record_items.append(item)
 
             # Only create record if it has items
@@ -159,11 +164,13 @@ class CSProWriter:
         )
 
         # Create the complete dictionary
-        return CSProDictionary(
+        dictionary = CSProDictionary(
             name=dict_name,
             labels=[DictionaryLabel(text=f"{questionnaire.title} Dictionary")],
             levels=[level],
         )
+
+        return dictionary, dict_item_to_question
 
     def _question_to_dictionary_item(self, question: Question) -> DictionaryItem:
         """Convert a questionnaire question to a CSPro dictionary item.
@@ -175,7 +182,7 @@ class CSProWriter:
             A CSPro dictionary item representing the question
         """
         # Determine content type and length based on question type
-        content_type = "alpha"
+        content_type: Literal["numeric", "alpha"] = "alpha"
         length = 25  # Default length for text
         value_sets = None
         label = self._to_dictionary_label(question.number, question.id)
@@ -195,7 +202,7 @@ class CSProWriter:
             length = question.max_length if question.max_length else 100
 
         elif question.type == QuestionType.SINGLE_SELECT:
-            content_type = "numeric"
+            content_type = "numeric"  # TODO: use alpha if any options are alphanumeric
             length = 1  # Default for single select codes
             # Get max length of codes to determine field length
             if question.options:
@@ -372,10 +379,34 @@ class CSProWriter:
         friendly_id = id.replace("_", " ").title()
         return f"{number} {friendly_id}" if number else friendly_id
 
+    def _get_capture_type(
+        self, item: DictionaryItem, dict_item_to_question: dict[str, Question]
+    ) -> FormItemCaptureType:
+        """Determine the appropriate FormItemCaptureType for a given question and dictionary item.
+
+        Args:
+            item: The corresponding DictionaryItem
+            dict_item_to_question: Mapping of DictionaryItem to Question
+
+        Returns:
+            The FormItemCaptureType to use for the form field
+        """
+        original_question = dict_item_to_question[item.name]
+        if original_question.type == QuestionType.SINGLE_SELECT:
+            return FormItemCaptureType.RADIO_BUTTON
+        elif original_question.type == QuestionType.MULTI_SELECT:
+            return FormItemCaptureType.CHECK_BOX
+        elif original_question.type == QuestionType.NUMERIC or original_question.type == QuestionType.TEXT:
+            return FormItemCaptureType.TEXT_BOX
+        elif original_question.type == QuestionType.DATE:
+            return FormItemCaptureType.DATE
+        else:
+            return FormItemCaptureType.TEXT_BOX
+
     def _create_items_form(
         self,
-        questionnaire: Questionnaire,  # Added questionnaire argument
         items: list[DictionaryItem],
+        dict_item_to_question: dict[str, Question],
         form_number: int,
         form_name: str,
         label: str,
@@ -410,16 +441,6 @@ class CSProWriter:
         max_label_length = max(len(item.labels[0].text) for item in items)
         label_width = max_label_length * LABEL_CHAR_SIZE + LABEL_WIDTH_PADDING
         for item in items:
-            # Find the corresponding question from the questionnaire
-            current_question: Question | None = None
-            for section in questionnaire.sections:
-                for question_in_section in section.questions:
-                    if self._to_dictionary_name(question_in_section.id) == item.name:
-                        current_question = question_in_section
-                        break
-                if current_question:
-                    break
-
             label_x = 50
             field_text_label = FormText(
                 name=f"{item.name}_LABEL",
@@ -430,13 +451,7 @@ class CSProWriter:
                 position=(label_x, row, label_x + label_width, row + FIELD_HEIGHT),
             )
 
-            # Determine capture_type based on QuestionType
-            if current_question and current_question.type == QuestionType.DATE:
-                capture_type = FormItemCaptureType.DATE
-            elif item.valueSets:
-                capture_type = FormItemCaptureType.RADIO_BUTTON
-            else:
-                capture_type = FormItemCaptureType.TEXT_BOX
+            capture_type = self._get_capture_type(item, dict_item_to_question)
 
             field_x = label_x + label_width
             field_width = item.length * FIELD_WIDTH_CHAR_SIZE
@@ -457,7 +472,12 @@ class CSProWriter:
         return form, group
 
     def _create_roster_form(
-        self, questionnaire: Questionnaire, record: DictionaryRecord, form_number: int, form_name: str, label: str
+        self,
+        record: DictionaryRecord,
+        dict_item_to_question: dict[str, Question],
+        form_number: int,
+        form_name: str,
+        label: str,
     ) -> tuple[Form, FormGroup]:
         """Helper to create a roster form and group for a record with multiple occurrences."""
         roster_name = self._replace_suffix(record.name, "_REC", "_ROSTER")
@@ -491,16 +511,6 @@ class CSProWriter:
             roster.stub_text.append(stub_text)
         roster.columns.append(RosterColumn(width=10))
         for item in record.items:
-            # Find the corresponding question from the questionnaire
-            current_question: Question | None = None
-            for section in questionnaire.sections:
-                for question_in_section in section.questions:
-                    if self._to_dictionary_name(question_in_section.id) == item.name:
-                        current_question = question_in_section
-                        break
-                if current_question:
-                    break
-
             header_text = FormText(
                 name=f"{item.name}_HEADER",
                 label=item.labels[0].text,
@@ -511,13 +521,7 @@ class CSProWriter:
             )
             column = RosterColumn(header_text=header_text, fields=[])
 
-            # Determine capture_type based on QuestionType
-            if current_question and current_question.type == QuestionType.DATE:
-                capture_type = FormItemCaptureType.DATE
-            elif item.valueSets:
-                capture_type = FormItemCaptureType.RADIO_BUTTON
-            else:
-                capture_type = FormItemCaptureType.TEXT_BOX
+            capture_type = self._get_capture_type(item, dict_item_to_question)
 
             field = FormField(
                 name=item.name,
@@ -551,7 +555,12 @@ class CSProWriter:
         )
         return form, group
 
-    def _generate_form_file(self, dictionary: CSProDictionary, dictionary_file_name: str) -> FormFile:
+    def _generate_form_file(
+        self,
+        dictionary: CSProDictionary,
+        dictionary_file_name: str,
+        dict_item_to_question: dict[str, Question],
+    ) -> FormFile:
         logger.info("Generating form file")
         level = dictionary.levels[0]
         forms: list[Form] = []
@@ -563,7 +572,7 @@ class CSProWriter:
         form_number += 1
         # Pass questionnaire to _create_items_form
         id_form, id_group = self._create_items_form(
-            questionnaire, id_items, form_number, form_name, "Id Items", required=True, max_occurs=1
+            id_items, dict_item_to_question, form_number, form_name, "Id Items", required=True, max_occurs=1
         )
         forms.append(id_form)
         groups.append(id_group)
@@ -576,13 +585,13 @@ class CSProWriter:
             if is_roster:
                 # Pass questionnaire to _create_roster_form
                 record_form, record_group = self._create_roster_form(
-                    questionnaire, record, form_number, form_name, label
+                    record, dict_item_to_question, form_number, form_name, label
                 )
             else:
                 # Pass questionnaire to _create_items_form
                 record_form, record_group = self._create_items_form(
-                    questionnaire,
                     record.items,
+                    dict_item_to_question,
                     form_number,
                     form_name,
                     label,

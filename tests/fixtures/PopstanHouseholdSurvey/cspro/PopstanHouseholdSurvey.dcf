@@ -107,7 +107,7 @@
                 }
               ],
               "contentType": "alpha",
-              "length": 100
+              "length": 30
             },
             {
               "name": "INTERVIEWER_CODE",
@@ -136,14 +136,14 @@
           },
           "items": [
             {
-              "name": "NAME",
+              "name": "MEMBER_NAME",
               "labels": [
                 {
-                  "text": "B01 Name"
+                  "text": "B01 Member Name"
                 }
               ],
               "contentType": "alpha",
-              "length": 100
+              "length": 30
             },
             {
               "name": "SEX",
@@ -300,10 +300,10 @@
               ]
             },
             {
-              "name": "CELL_PHONE",
+              "name": "HAS_WORKING_CELL_PHONE",
               "labels": [
                 {
-                  "text": "B04 Cell Phone"
+                  "text": "B04 Has Working Cell Phone"
                 }
               ],
               "contentType": "numeric",
@@ -311,10 +311,10 @@
               "zeroFill": true,
               "valueSets": [
                 {
-                  "name": "CELL_PHONE_VS1",
+                  "name": "HAS_WORKING_CELL_PHONE_VS1",
                   "labels": [
                     {
-                      "text": "B04 Cell Phone"
+                      "text": "B04 Has Working Cell Phone"
                     }
                   ],
                   "values": [
@@ -333,7 +333,7 @@
                     {
                       "labels": [
                         {
-                          "text": "No (skip to B07)"
+                          "text": "No"
                         }
                       ],
                       "pairs": [
@@ -347,14 +347,14 @@
               ]
             },
             {
-              "name": "PHONE_NUMBER",
+              "name": "CELL_PHONE_NUMBER",
               "labels": [
                 {
-                  "text": "B05 Phone Number"
+                  "text": "B05 Cell Phone Number"
                 }
               ],
               "contentType": "alpha",
-              "length": 100
+              "length": 15
             },
             {
               "name": "AGE",
@@ -364,7 +364,7 @@
                 }
               ],
               "contentType": "numeric",
-              "length": 15,
+              "length": 3,
               "zeroFill": true
             },
             {
@@ -379,10 +379,10 @@
               "zeroFill": true
             },
             {
-              "name": "LANGUAGE",
+              "name": "LANGUAGE_AT_HOME",
               "labels": [
                 {
-                  "text": "B08 Language"
+                  "text": "B08 Language At Home"
                 }
               ],
               "contentType": "numeric",
@@ -390,10 +390,10 @@
               "zeroFill": true,
               "valueSets": [
                 {
-                  "name": "LANGUAGE_VS1",
+                  "name": "LANGUAGE_AT_HOME_VS1",
                   "labels": [
                     {
-                      "text": "B08 Language"
+                      "text": "B08 Language At Home"
                     }
                   ],
                   "values": [
@@ -436,7 +436,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Other specify"
+                          "text": "Other"
                         }
                       ],
                       "pairs": [
@@ -465,10 +465,10 @@
           },
           "items": [
             {
-              "name": "EVER_ATTENDED_SCHOOL",
+              "name": "SCHOOL_ATTENDANCE",
               "labels": [
                 {
-                  "text": "C01 Ever Attended School"
+                  "text": "C01 School Attendance"
                 }
               ],
               "contentType": "numeric",
@@ -476,10 +476,10 @@
               "zeroFill": true,
               "valueSets": [
                 {
-                  "name": "EVER_ATTENDED_SCHOOL_VS1",
+                  "name": "SCHOOL_ATTENDANCE_VS1",
                   "labels": [
                     {
-                      "text": "C01 Ever Attended School"
+                      "text": "C01 School Attendance"
                     }
                   ],
                   "values": [
@@ -510,7 +510,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Don't know"
+                          "text": "DK/NA"
                         }
                       ],
                       "pairs": [
@@ -524,10 +524,10 @@
               ]
             },
             {
-              "name": "HIGHEST_LEVEL_OF_EDUCATION_COMPLETED",
+              "name": "LEVEL_OF_EDUCATION",
               "labels": [
                 {
-                  "text": "C02 Highest Level Of Education Completed"
+                  "text": "C02 Level Of Education"
                 }
               ],
               "contentType": "numeric",
@@ -535,17 +535,17 @@
               "zeroFill": true,
               "valueSets": [
                 {
-                  "name": "HIGHEST_LEVEL_OF_EDUCATION_COMPLETED_VS1",
+                  "name": "LEVEL_OF_EDUCATION_VS1",
                   "labels": [
                     {
-                      "text": "C02 Highest Level Of Education Completed"
+                      "text": "C02 Level Of Education"
                     }
                   ],
                   "values": [
                     {
                       "labels": [
                         {
-                          "text": "Pre-school"
+                          "text": "pre-school"
                         }
                       ],
                       "pairs": [
@@ -557,7 +557,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 1"
+                          "text": "standard 1"
                         }
                       ],
                       "pairs": [
@@ -569,7 +569,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 2"
+                          "text": "standard 2"
                         }
                       ],
                       "pairs": [
@@ -581,7 +581,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 3"
+                          "text": "standard 3"
                         }
                       ],
                       "pairs": [
@@ -593,7 +593,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 4"
+                          "text": "standard 4"
                         }
                       ],
                       "pairs": [
@@ -605,7 +605,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 5"
+                          "text": "standard 5"
                         }
                       ],
                       "pairs": [
@@ -617,7 +617,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 6"
+                          "text": "standard 6"
                         }
                       ],
                       "pairs": [
@@ -629,7 +629,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 7"
+                          "text": "standard 7"
                         }
                       ],
                       "pairs": [
@@ -641,7 +641,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Standard 8"
+                          "text": "standard 8"
                         }
                       ],
                       "pairs": [
@@ -653,7 +653,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Form 1"
+                          "text": "form 1"
                         }
                       ],
                       "pairs": [
@@ -665,7 +665,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Form 2"
+                          "text": "form 2"
                         }
                       ],
                       "pairs": [
@@ -677,7 +677,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Form 3"
+                          "text": "form 3"
                         }
                       ],
                       "pairs": [
@@ -689,7 +689,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Form 4"
+                          "text": "form 4"
                         }
                       ],
                       "pairs": [
@@ -701,7 +701,7 @@
                     {
                       "labels": [
                         {
-                          "text": "University"
+                          "text": "university"
                         }
                       ],
                       "pairs": [
@@ -713,7 +713,7 @@
                     {
                       "labels": [
                         {
-                          "text": "Graduate"
+                          "text": "graduate"
                         }
                       ],
                       "pairs": [
@@ -789,10 +789,10 @@
           },
           "items": [
             {
-              "name": "NUMBER_OF_ROOMS_MAIN_DWELLING",
+              "name": "NUM_ROOMS_MAIN_DWELLING",
               "labels": [
                 {
-                  "text": "D01 Number Of Rooms Main Dwelling"
+                  "text": "D01 Num Rooms Main Dwelling"
                 }
               ],
               "contentType": "numeric",
@@ -800,10 +800,10 @@
               "zeroFill": true
             },
             {
-              "name": "NUMBER_OF_BEDROOMS_MAIN_DWELLING",
+              "name": "NUM_BEDROOMS_MAIN_DWELLING",
               "labels": [
                 {
-                  "text": "D02 Number Of Bedrooms Main Dwelling"
+                  "text": "D02 Num Bedrooms Main Dwelling"
                 }
               ],
               "contentType": "numeric",
@@ -811,10 +811,10 @@
               "zeroFill": true
             },
             {
-              "name": "TYPE_OF_MAIN_DWELLING",
+              "name": "TYPE_MAIN_DWELLING",
               "labels": [
                 {
-                  "text": "D03 Type Of Main Dwelling"
+                  "text": "D03 Type Main Dwelling"
                 }
               ],
               "contentType": "numeric",
@@ -822,10 +822,10 @@
               "zeroFill": true,
               "valueSets": [
                 {
-                  "name": "TYPE_OF_MAIN_DWELLING_VS1",
+                  "name": "TYPE_MAIN_DWELLING_VS1",
                   "labels": [
                     {
-                      "text": "D03 Type Of Main Dwelling"
+                      "text": "D03 Type Main Dwelling"
                     }
                   ],
                   "values": [
@@ -886,6 +886,100 @@
                       "pairs": [
                         {
                           "value": "5"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "HOUSEHOLD_UTILITIES",
+              "labels": [
+                {
+                  "text": "D04 Household Utilities"
+                }
+              ],
+              "contentType": "alpha",
+              "length": 6,
+              "valueSets": [
+                {
+                  "name": "HOUSEHOLD_UTILITIES_VS1",
+                  "labels": [
+                    {
+                      "text": "D04 Household Utilities"
+                    }
+                  ],
+                  "values": [
+                    {
+                      "labels": [
+                        {
+                          "text": "Electricity from grid"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Electricity from generator"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Solar electricity"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "3"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Piped water"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "4"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Water from well/borehole"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "5"
+                        }
+                      ]
+                    },
+                    {
+                      "labels": [
+                        {
+                          "text": "Flush toilet"
+                        }
+                      ],
+                      "pairs": [
+                        {
+                          "value": "6"
                         }
                       ]
                     }
