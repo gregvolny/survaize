@@ -364,12 +364,17 @@ class AIQuestionnaireInterpreter:
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
                 - Question type (either single_select, multi_select, numeric, text, date, location)
-                - single_select and multi_select questions will have a list of responses, for those questions extract 
+                - Single_select and multi_select questions will have a list of responses, for those questions extract 
                   the code and label for each response
-                - numeric questions will have a minimum and maximum value which can be inferred based 
-                  on the number of digits represented as boxes next to or under the question, if there is no information
-                  to infer the minimum and maximum values, omit them from the output
-                - text questions will have a maximum length which can be inferred based on the number of boxes next to
+                - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
+                  examine the image of the question, determine the number of digits allowed for the response represented
+                  as boxes next to or under the question. For example, if the question has 2 boxes next to it, the 
+                  maximum is 99. If the length cannot be determined from the image, infer a reasonable value based on 
+                  the question itself. For example, if the question is about age, the maximum is 120 since that is an
+                  upper limit for the age of a human being. For the minimum, infer a reasonable value based on the
+                  question. If there is no information to infer the minimum and maximum values, omit them from the 
+                  output.
+                - Text questions will have a maximum length which can be inferred based on the number of boxes next to
                   or under the question, if there is no information to infer the maximum length, omit the field from 
                   the output
             5. Identify the id-fields for the questionnaire. These must be a subset of the ids from questions in the
@@ -413,12 +418,17 @@ class AIQuestionnaireInterpreter:
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
                 - Question type (either single_select, multi_select, numeric, text, date, location)
-                - single_select and multi_select questions will have a list of responses, for those questions extract
+                - Single_select and multi_select questions will have a list of responses, for those questions extract
                   the code and label for each response
-                - numeric questions will have a minimum and maximum value which can be inferred based 
-                  on the number of digits represented as boxes next to or under the question, if there is no 
-                  information to infer the minimum and maximum values, omit them from the output
-                - text questions will have a maximum length which can be inferred based on the number of boxes next to
+                - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
+                  examine the image of the question, determine the number of digits allowed for the response represented
+                  as boxes next to or under the question. For example, if the question has 2 boxes next to it, the 
+                  maximum is 99. If the length cannot be determined from the image, infer a reasonable value based on 
+                  the question itself. For example, if the question is about age, the maximum is 120 since that is an
+                  upper limit for the age of a human being. For the minimum, infer a reasonable value based on the
+                  question. If there is no information to infer the minimum and maximum values, omit them from the 
+                  output.
+                - Text questions will have a maximum length which can be inferred based on the number of boxes next to
                   or under the question, if there is no information to infer the maximum length, omit the field from the
                   output
 

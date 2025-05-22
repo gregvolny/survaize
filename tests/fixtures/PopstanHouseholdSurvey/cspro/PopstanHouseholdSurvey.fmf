@@ -60,9 +60,10 @@ Label=D Section D Housing
 Level=1
 Size=300,300
   
-Item=NUMBER_OF_ROOMS_MAIN_DWELLING
-Item=NUMBER_OF_BEDROOMS_MAIN_DWELLING
-Item=TYPE_OF_MAIN_DWELLING
+Item=NUM_ROOMS_MAIN_DWELLING
+Item=NUM_BEDROOMS_MAIN_DWELLING
+Item=TYPE_MAIN_DWELLING
+Item=HOUSEHOLD_UTILITIES
   
 [EndForm]
   
@@ -142,7 +143,7 @@ Name=INTERVIEW_DATE
 Position=241,27,361,47
 Item=INTERVIEW_DATE,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
-DataCaptureType=TextBox
+DataCaptureType=Date
 Form=2
   
 [Text]
@@ -152,7 +153,7 @@ Text=A5 Interview Date
   
 [Field]
 Name=INTERVIEWER_NAME
-Position=241,57,1741,77
+Position=241,57,691,77
 Item=INTERVIEWER_NAME,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 UseUnicodeTextBox=Yes
@@ -227,17 +228,17 @@ Width=10
 [Column]
   
 [HeaderText]
-Text=B01 Name
+Text=B01 Member Name
   
 [Field]
-Name=NAME
-Item=NAME,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=MEMBER_NAME
+Item=MEMBER_NAME,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 UseUnicodeTextBox=Yes
 DataCaptureType=TextBox
   
 [Text]
-Text=B01 Name
+Text=B01 Member Name
   
 [EndColumn]
   
@@ -276,33 +277,33 @@ Text=B03 Relationship To Head
 [Column]
   
 [HeaderText]
-Text=B04 Cell Phone
+Text=B04 Has Working Cell Phone
   
 [Field]
-Name=CELL_PHONE
-Item=CELL_PHONE,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=HAS_WORKING_CELL_PHONE
+Item=HAS_WORKING_CELL_PHONE,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=RadioButton
   
 [Text]
-Text=B04 Cell Phone
+Text=B04 Has Working Cell Phone
   
 [EndColumn]
   
 [Column]
   
 [HeaderText]
-Text=B05 Phone Number
+Text=B05 Cell Phone Number
   
 [Field]
-Name=PHONE_NUMBER
-Item=PHONE_NUMBER,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=CELL_PHONE_NUMBER
+Item=CELL_PHONE_NUMBER,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 UseUnicodeTextBox=Yes
 DataCaptureType=TextBox
   
 [Text]
-Text=B05 Phone Number
+Text=B05 Cell Phone Number
   
 [EndColumn]
   
@@ -331,7 +332,7 @@ Text=B07 Date Of Birth
 Name=DATE_OF_BIRTH
 Item=DATE_OF_BIRTH,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
-DataCaptureType=TextBox
+DataCaptureType=Date
   
 [Text]
 Text=B07 Date Of Birth
@@ -341,16 +342,16 @@ Text=B07 Date Of Birth
 [Column]
   
 [HeaderText]
-Text=B08 Language
+Text=B08 Language At Home
   
 [Field]
-Name=LANGUAGE
-Item=LANGUAGE,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=LANGUAGE_AT_HOME
+Item=LANGUAGE_AT_HOME,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=RadioButton
   
 [Text]
-Text=B08 Language
+Text=B08 Language At Home
   
 [EndColumn]
   
@@ -419,32 +420,32 @@ Width=10
 [Column]
   
 [HeaderText]
-Text=C01 Ever Attended School
+Text=C01 School Attendance
   
 [Field]
-Name=EVER_ATTENDED_SCHOOL
-Item=EVER_ATTENDED_SCHOOL,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=SCHOOL_ATTENDANCE
+Item=SCHOOL_ATTENDANCE,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=RadioButton
   
 [Text]
-Text=C01 Ever Attended School
+Text=C01 School Attendance
   
 [EndColumn]
   
 [Column]
   
 [HeaderText]
-Text=C02 Highest Level Of Education Completed
+Text=C02 Level Of Education
   
 [Field]
-Name=HIGHEST_LEVEL_OF_EDUCATION_COMPLETED
-Item=HIGHEST_LEVEL_OF_EDUCATION_COMPLETED,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=LEVEL_OF_EDUCATION
+Item=LEVEL_OF_EDUCATION,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=RadioButton
   
 [Text]
-Text=C02 Highest Level Of Education Completed
+Text=C02 Level Of Education
   
 [EndColumn]
   
@@ -476,42 +477,56 @@ Form=5
 Max=1
   
 [Field]
-Name=NUMBER_OF_ROOMS_MAIN_DWELLING
-Position=394,27,424,47
-Item=NUMBER_OF_ROOMS_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=NUM_ROOMS_MAIN_DWELLING
+Position=340,27,370,47
+Item=NUM_ROOMS_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=TextBox
 Form=5
   
 [Text]
-Position=50,27,394,47
-Text=D01 Number Of Rooms Main Dwelling
+Position=50,27,340,47
+Text=D01 Num Rooms Main Dwelling
   
   
 [Field]
-Name=NUMBER_OF_BEDROOMS_MAIN_DWELLING
-Position=394,57,424,77
-Item=NUMBER_OF_BEDROOMS_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=NUM_BEDROOMS_MAIN_DWELLING
+Position=340,57,370,77
+Item=NUM_BEDROOMS_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=TextBox
 Form=5
   
 [Text]
-Position=50,57,394,77
-Text=D02 Number Of Bedrooms Main Dwelling
+Position=50,57,340,77
+Text=D02 Num Bedrooms Main Dwelling
   
   
 [Field]
-Name=TYPE_OF_MAIN_DWELLING
-Position=394,87,409,107
-Item=TYPE_OF_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
+Name=TYPE_MAIN_DWELLING
+Position=340,87,355,107
+Item=TYPE_MAIN_DWELLING,POPSTAN_HOUSEHOLD_SURVEY_DICT
 FieldLabelType=DictionaryLabel
 DataCaptureType=RadioButton
 Form=5
   
 [Text]
-Position=50,87,394,107
-Text=D03 Type Of Main Dwelling
+Position=50,87,340,107
+Text=D03 Type Main Dwelling
+  
+  
+[Field]
+Name=HOUSEHOLD_UTILITIES
+Position=340,117,430,137
+Item=HOUSEHOLD_UTILITIES,POPSTAN_HOUSEHOLD_SURVEY_DICT
+FieldLabelType=DictionaryLabel
+UseUnicodeTextBox=Yes
+DataCaptureType=CheckBox
+Form=5
+  
+[Text]
+Position=50,117,340,137
+Text=D04 Household Utilities
   
 [EndGroup]
   

@@ -22,7 +22,7 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 9.0,
           "decimal_places": null
         },
@@ -33,7 +33,7 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 99.0,
           "decimal_places": null
         },
@@ -44,7 +44,7 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 999.0,
           "decimal_places": null
         },
@@ -55,7 +55,7 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 999.0,
           "decimal_places": null
         },
@@ -76,7 +76,7 @@
           "instructions": null,
           "universe": null,
           "type": "text",
-          "max_length": null
+          "max_length": 30
         },
         {
           "number": "A7",
@@ -85,7 +85,7 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 999.0,
           "decimal_places": null
         }
@@ -96,17 +96,17 @@
       "id": "section_b_household_roster",
       "number": "B",
       "title": "Household Roster",
-      "description": "List all individuals, starting with the head of household, who share common arrangements for meals. Complete B01 for all household members before starting B02.",
+      "description": "List all individuals, starting with the head of household, who share common arrangements for meals.",
       "universe": "All household members",
       "questions": [
         {
           "number": "B01",
-          "id": "name",
-          "text": "First and last name",
-          "instructions": "List all individuals, starting with the head of household, who share common arrangements for meals. Complete B01 for all household members before starting B02.",
+          "id": "member_name",
+          "text": "First and last name of household member",
+          "instructions": "Complete B01 for all household members before starting B02.",
           "universe": null,
           "type": "text",
-          "max_length": null
+          "max_length": 30
         },
         {
           "number": "B02",
@@ -166,9 +166,9 @@
         },
         {
           "number": "B04",
-          "id": "cell_phone",
+          "id": "has_working_cell_phone",
           "text": "Does (name) have a working cell phone?",
-          "instructions": null,
+          "instructions": "If 'No', skip to B07.",
           "universe": null,
           "type": "single_select",
           "options": [
@@ -178,18 +178,18 @@
             },
             {
               "code": "2",
-              "label": "No (skip to B07)"
+              "label": "No"
             }
           ]
         },
         {
           "number": "B05",
-          "id": "phone_number",
+          "id": "cell_phone_number",
           "text": "What is (name)'s cell phone number?",
           "instructions": null,
           "universe": null,
           "type": "text",
-          "max_length": null
+          "max_length": 15
         },
         {
           "number": "B06",
@@ -198,8 +198,8 @@
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
-          "max_value": null,
+          "min_value": 0.0,
+          "max_value": 120.0,
           "decimal_places": null
         },
         {
@@ -214,9 +214,9 @@
         },
         {
           "number": "B08",
-          "id": "language",
+          "id": "language_at_home",
           "text": "What language does (name) usually speak at home?",
-          "instructions": "For age 5 and above",
+          "instructions": "For age 5 and above.",
           "universe": null,
           "type": "single_select",
           "options": [
@@ -234,7 +234,7 @@
             },
             {
               "code": "4",
-              "label": "Other specify"
+              "label": "Other"
             }
           ]
         }
@@ -250,7 +250,7 @@
       "questions": [
         {
           "number": "C01",
-          "id": "ever_attended_school",
+          "id": "school_attendance",
           "text": "Has (name) ever attended school?",
           "instructions": "If 1 or 9 skip to C03",
           "universe": null,
@@ -266,13 +266,13 @@
             },
             {
               "code": "9",
-              "label": "Don't know"
+              "label": "DK/NA"
             }
           ]
         },
         {
           "number": "C02",
-          "id": "highest_level_of_education_completed",
+          "id": "level_of_education",
           "text": "What is the highest level of formal education that (name) has completed?",
           "instructions": null,
           "universe": null,
@@ -280,63 +280,63 @@
           "options": [
             {
               "code": "00",
-              "label": "Pre-school"
+              "label": "pre-school"
             },
             {
               "code": "01",
-              "label": "Standard 1"
+              "label": "standard 1"
             },
             {
               "code": "02",
-              "label": "Standard 2"
+              "label": "standard 2"
             },
             {
               "code": "03",
-              "label": "Standard 3"
+              "label": "standard 3"
             },
             {
               "code": "04",
-              "label": "Standard 4"
+              "label": "standard 4"
             },
             {
               "code": "05",
-              "label": "Standard 5"
+              "label": "standard 5"
             },
             {
               "code": "06",
-              "label": "Standard 6"
+              "label": "standard 6"
             },
             {
               "code": "07",
-              "label": "Standard 7"
+              "label": "standard 7"
             },
             {
               "code": "08",
-              "label": "Standard 8"
+              "label": "standard 8"
             },
             {
               "code": "09",
-              "label": "Form 1"
+              "label": "form 1"
             },
             {
               "code": "10",
-              "label": "Form 2"
+              "label": "form 2"
             },
             {
               "code": "11",
-              "label": "Form 3"
+              "label": "form 3"
             },
             {
               "code": "12",
-              "label": "Form 4"
+              "label": "form 4"
             },
             {
               "code": "13",
-              "label": "University"
+              "label": "university"
             },
             {
               "code": "14",
-              "label": "Graduate"
+              "label": "graduate"
             }
           ]
         },
@@ -370,29 +370,29 @@
       "questions": [
         {
           "number": "D01",
-          "id": "number_of_rooms_main_dwelling",
+          "id": "num_rooms_main_dwelling",
           "text": "How many rooms are in the main dwelling?",
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 1.0,
           "max_value": 99.0,
           "decimal_places": null
         },
         {
           "number": "D02",
-          "id": "number_of_bedrooms_main_dwelling",
+          "id": "num_bedrooms_main_dwelling",
           "text": "How many bedrooms are in the main dwelling?",
           "instructions": null,
           "universe": null,
           "type": "numeric",
-          "min_value": null,
+          "min_value": 0.0,
           "max_value": 99.0,
           "decimal_places": null
         },
         {
           "number": "D03",
-          "id": "type_of_main_dwelling",
+          "id": "type_main_dwelling",
           "text": "What is the type of the main dwelling?",
           "instructions": null,
           "universe": null,
@@ -419,6 +419,42 @@
               "label": "Improvised (kiosk/container)"
             }
           ]
+        },
+        {
+          "number": "D04",
+          "id": "household_utilities",
+          "text": "Which of the following utilities are available in the household?",
+          "instructions": "Mark all that apply",
+          "universe": null,
+          "type": "multi_select",
+          "options": [
+            {
+              "code": "1",
+              "label": "Electricity from grid"
+            },
+            {
+              "code": "2",
+              "label": "Electricity from generator"
+            },
+            {
+              "code": "3",
+              "label": "Solar electricity"
+            },
+            {
+              "code": "4",
+              "label": "Piped water"
+            },
+            {
+              "code": "5",
+              "label": "Water from well/borehole"
+            },
+            {
+              "code": "6",
+              "label": "Flush toilet"
+            }
+          ],
+          "min_selections": null,
+          "max_selections": null
         }
       ],
       "occurrences": 1

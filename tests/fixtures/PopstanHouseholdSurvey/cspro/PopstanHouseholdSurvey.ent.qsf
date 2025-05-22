@@ -63,12 +63,11 @@ questions:
       EN: <p>Interviewer Code</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NAME
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.MEMBER_NAME
   conditions:
   - questionText:
-      EN: <p>First and last name</p><p><span class="instruction">List all individuals,
-        starting with the head of household, who share common arrangements for meals.
-        Complete B01 for all household members before starting B02.</span></p>
+      EN: <p>First and last name of household member</p><p><span class="instruction">Complete
+        B01 for all household members before starting B02.</span></p>
     helpText:
       EN: ''
 - name: POPSTAN_HOUSEHOLD_SURVEY_DICT.SEX
@@ -83,13 +82,14 @@ questions:
       EN: <p>What is (name)'s relationship to the head of household?</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.CELL_PHONE
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.HAS_WORKING_CELL_PHONE
   conditions:
   - questionText:
-      EN: <p>Does (name) have a working cell phone?</p>
+      EN: <p>Does (name) have a working cell phone?</p><p><span class="instruction">If
+        'No', skip to B07.</span></p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.PHONE_NUMBER
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.CELL_PHONE_NUMBER
   conditions:
   - questionText:
       EN: <p>What is (name)'s cell phone number?</p>
@@ -107,21 +107,21 @@ questions:
       EN: <p>When was (name) born?</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.LANGUAGE
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.LANGUAGE_AT_HOME
   conditions:
   - questionText:
       EN: <p>What language does (name) usually speak at home?</p><p><span class="instruction">For
-        age 5 and above</span></p>
+        age 5 and above.</span></p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.EVER_ATTENDED_SCHOOL
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.SCHOOL_ATTENDANCE
   conditions:
   - questionText:
       EN: <p>Has (name) ever attended school?</p><p><span class="instruction">If 1
         or 9 skip to C03</span></p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.HIGHEST_LEVEL_OF_EDUCATION_COMPLETED
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.LEVEL_OF_EDUCATION
   conditions:
   - questionText:
       EN: <p>What is the highest level of formal education that (name) has completed?</p>
@@ -133,22 +133,29 @@ questions:
       EN: <p>Does (name) know how to read or write in any language?</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUMBER_OF_ROOMS_MAIN_DWELLING
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUM_ROOMS_MAIN_DWELLING
   conditions:
   - questionText:
       EN: <p>How many rooms are in the main dwelling?</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUMBER_OF_BEDROOMS_MAIN_DWELLING
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.NUM_BEDROOMS_MAIN_DWELLING
   conditions:
   - questionText:
       EN: <p>How many bedrooms are in the main dwelling?</p>
     helpText:
       EN: ''
-- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.TYPE_OF_MAIN_DWELLING
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.TYPE_MAIN_DWELLING
   conditions:
   - questionText:
       EN: <p>What is the type of the main dwelling?</p>
+    helpText:
+      EN: ''
+- name: POPSTAN_HOUSEHOLD_SURVEY_DICT.HOUSEHOLD_UTILITIES
+  conditions:
+  - questionText:
+      EN: <p>Which of the following utilities are available in the household?</p><p><span
+        class="instruction">Mark all that apply</span></p>
     helpText:
       EN: ''
 ...
