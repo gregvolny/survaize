@@ -67,7 +67,6 @@ For instructions on publishing to PyPI, see [publishing.md](publishing.md).
 MIT 
 
 ## TODO
-- Use question type from Questionnaire to set capture type in CSPro to handle dates correctly
 - Correctly handle location question type (produce two fields in CSPro)
 - Fills in CAPI question text
 - Evals
