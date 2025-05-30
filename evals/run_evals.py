@@ -13,7 +13,7 @@ config = create_llm_config_from_env()
 
 async def convert_questionnaire(pdf_path: Path) -> Questionnaire:
 
-    interpreter = AIQuestionnaireInterpreter(create_llm_config_from_env())
+    interpreter = AIQuestionnaireInterpreter(llm_config=config)
     pdf_reader = PDFReader(interpreter)
     questionnaire = pdf_reader.read(pdf_path)
     return questionnaire
