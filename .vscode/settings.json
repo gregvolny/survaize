@@ -6,6 +6,8 @@
     "python.testing.pytestEnabled": true,
     "cSpell.words": [
         "cspro",
+        "evals",
+        "popstan",
         "Survaize"
     ]
 }
