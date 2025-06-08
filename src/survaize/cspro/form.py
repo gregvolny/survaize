@@ -27,7 +27,7 @@ class FormItemBase(FormBase):
 class FormGroup(FormItemBase):
     required: bool
     max: int
-    items: list[FormItemBase] = []
+    items: list[FormItemBase] = Field(default_factory=list)
 
 
 class FormText(FormItemBase):
@@ -64,7 +64,7 @@ class FormField(FormItemBase):
 class RosterColumn(BaseModel):
     width: int | None = None
     header_text: FormText | None = None
-    fields: list[FormField] = []
+    fields: list[FormField] = Field(default_factory=list)
 
 
 class Roster(FormGroup):
@@ -76,8 +76,8 @@ class Roster(FormGroup):
     heading_row_height: int
     use_occurrence_labels: bool | None = None
     free_movement: bool = False
-    columns: list[RosterColumn] = []
-    stub_text: list[FormText] = []
+    columns: list[RosterColumn] = Field(default_factory=list)
+    stub_text: list[FormText] = Field(default_factory=list)
 
 
 class FormLevel(FormBase):
@@ -87,7 +87,7 @@ class FormLevel(FormBase):
 class Form(FormBase):
     level: int
     size: tuple[int, int]
-    items: list[FormItemBase] = []
+    items: list[FormItemBase] = Field(default_factory=list)
 
 
 class FormFile(BaseModel):
