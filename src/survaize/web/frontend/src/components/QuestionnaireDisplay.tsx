@@ -84,7 +84,21 @@ const renderQuestion = (question: Question) => {
 };
 
 export const QuestionnaireDisplay: React.FC = () => {
-  const { questionnaire } = useQuestionnaire();
+  const { questionnaire, isLoading, loadProgress, loadMessage } = useQuestionnaire();
+
+  if (isLoading) {
+    return (
+      <div className="questionnaire-loading">
+        <div className="loading-animation" role="img" aria-label="Processing">
+          📝
+        </div>
+        <p>{loadMessage} ({Math.round(loadProgress)}%)</p>
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${loadProgress}%` }}></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!questionnaire) {
     return (

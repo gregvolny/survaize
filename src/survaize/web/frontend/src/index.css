@@ -163,6 +163,24 @@ button:focus-visible {
   transition: width 0.3s ease;
 }
 
+/* Loading view */
+.questionnaire-loading {
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading-animation {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
 /* Error messages */
 .error-message {
   color: var(--error-color);

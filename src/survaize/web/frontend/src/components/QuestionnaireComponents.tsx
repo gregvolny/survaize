@@ -7,7 +7,13 @@ interface QuestionnaireContextType {
   setQuestionnaire: (questionnaire: Questionnaire | null) => void;
   isSaving: boolean;
   isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  loadProgress: number;
+  setLoadProgress: (progress: number) => void;
+  loadMessage: string;
+  setLoadMessage: (message: string) => void;
   errorMessage: string | null;
+  setErrorMessage: (message: string | null) => void;
 }
 
 // Create context with default values
@@ -16,7 +22,13 @@ export const QuestionnaireContext = React.createContext<QuestionnaireContextType
   setQuestionnaire: () => {},
   isSaving: false,
   isLoading: false,
-  errorMessage: null
+  setIsLoading: () => {},
+  loadProgress: 0,
+  setLoadProgress: () => {},
+  loadMessage: '',
+  setLoadMessage: () => {},
+  errorMessage: null,
+  setErrorMessage: () => {}
 });
 
 interface QuestionnaireProviderProps {
@@ -27,6 +39,8 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({ ch
   const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [loadMessage, setLoadMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const value = {
@@ -34,7 +48,13 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({ ch
     setQuestionnaire,
     isSaving,
     isLoading,
-    errorMessage
+    setIsLoading,
+    loadProgress,
+    setLoadProgress,
+    loadMessage,
+    setLoadMessage,
+    errorMessage,
+    setErrorMessage
   };
 
   return (
@@ -55,8 +75,13 @@ export const useQuestionnaire = () => {
 
 // Component for opening a questionnaire
 export const OpenQuestionnaire: React.FC = () => {
-  const { setQuestionnaire } = useQuestionnaire();
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    setQuestionnaire,
+    isLoading,
+    setIsLoading,
+    setLoadProgress,
+    setLoadMessage
+  } = useQuestionnaire();
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -83,7 +108,6 @@ export const OpenQuestionnaire: React.FC = () => {
   }, []);
 
   const [processingPdf, setProcessingPdf] = useState(false);
-  const [progress, setProgress] = useState(0);
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -107,17 +131,19 @@ export const OpenQuestionnaire: React.FC = () => {
     try {
       const loadedQuestionnaire = await apiService.current.readQuestionnaire(file, (progress, message) => {
         console.log('Progress update:', progress, message);
-        setProgress(progress);
+        setLoadProgress(progress);
+        setLoadMessage(message);
       });
       console.log('Questionnaire loaded successfully:', loadedQuestionnaire);
-      setProgress(100);
+      setLoadProgress(100);
       setQuestionnaire(loadedQuestionnaire);
     } catch (err) {
       console.error('Error loading questionnaire:', err);
       setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setProcessingPdf(false);
-      setProgress(0);
+      setLoadProgress(0);
+      setLoadMessage('');
       setIsLoading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -140,23 +166,13 @@ export const OpenQuestionnaire: React.FC = () => {
         onChange={handleFileChange}
         accept=".pdf,.json"
       />
-      <button 
-        onClick={handleOpenClick} 
+      <button
+        onClick={handleOpenClick}
         disabled={isLoading}
         className="action-button"
       >
-        {isLoading ? (
-          processingPdf ? `Processing PDF (${Math.round(progress)}%)` : 'Opening...'
-        ) : 'Open Questionnaire'}
+        {isLoading ? (processingPdf ? 'Processing PDF...' : 'Opening...') : 'Open Questionnaire'}
       </button>
-      {processingPdf && (
-        <div className="progress-bar-container">
-          <div 
-            className="progress-bar" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-      )}
       {error && <div className="error-message">{error}</div>}
     </div>
   );
