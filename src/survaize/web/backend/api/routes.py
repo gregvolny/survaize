@@ -126,7 +126,7 @@ async def questionnaire_progress(job_id: str, websocket: WebSocket) -> None:
     logger.info(f"WebSocket connection requested for job_id: {job_id}")
     await websocket.accept()
     logger.info(f"WebSocket connection accepted for job_id: {job_id}")
-    
+
     queue = progress_queues.get(job_id)
     if queue is None:
         logger.warning(f"No queue found for job_id: {job_id}")
