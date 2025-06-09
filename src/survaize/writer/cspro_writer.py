@@ -94,7 +94,6 @@ class CSProWriter:
 
         Args:
             questionnaire: The questionnaire data
-            output_path: Path to save the generated file
 
         Returns:
             The generated CSPro dictionary and a mapping of dictionary item to question that it was created from
