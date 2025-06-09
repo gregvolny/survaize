@@ -38,3 +38,11 @@ def test_cspro_writer_generates_expected_files(tmp_path: Path) -> None:
         expected = read_text(fixture_path)
         actual = read_text(gen_path)
         assert actual == expected, f"Contents differ for file {fixture_path.name}"
+
+    # Ensure no extra files were generated
+    generated_files = {p.name for p in generated_dir.iterdir()}
+    fixture_files = {p.name for p in cspro_fixture_dir.iterdir()}
+    assert generated_files == fixture_files, (
+        f"Unexpected generated files: {sorted(generated_files - fixture_files)}; "
+        f"missing files: {sorted(fixture_files - generated_files)}"
+    )
