@@ -1,86 +1,13 @@
 import { Questionnaire } from '../models/questionnaire';
 
-// Mock questionnaire data for development (fallback if API fails)
-export const mockQuestionnaire: Questionnaire = {
-  title: "Household Survey",
-  description: "A survey about household composition and characteristics",
-  id_fields: ["household_id", "region_code"],
-  sections: [
-    {
-      id: "section_a",
-      number: "A",
-      title: "Household Identification",
-      description: "Information to identify the household",
-      universe: null,
-      questions: [
-        {
-          number: "A1",
-          id: "household_id",
-          text: "Household ID",
-          type: "text",
-          max_length: 10,
-        },
-        {
-          number: "A2",
-          id: "region_code",
-          text: "Region Code",
-          type: "single_select",
-          options: [
-            { code: "1", label: "North" },
-            { code: "2", label: "South" },
-            { code: "3", label: "East" },
-            { code: "4", label: "West" },
-          ],
-        }
-      ],
-      occurrences: 1,
-    },
-    {
-      id: "section_b",
-      number: "B",
-      title: "Household Member Information",
-      description: "Details about each household member",
-      universe: null,
-      questions: [
-        {
-          number: "B1",
-          id: "name",
-          text: "Name of household member",
-          type: "text",
-          max_length: 50,
-        },
-        {
-          number: "B2",
-          id: "age",
-          text: "Age in completed years",
-          type: "numeric",
-          min_value: 0,
-          max_value: 120,
-        },
-        {
-          number: "B3",
-          id: "gender",
-          text: "Gender",
-          type: "single_select",
-          options: [
-            { code: "1", label: "Male" },
-            { code: "2", label: "Female" },
-            { code: "3", label: "Other" },
-          ],
-        }
-      ],
-      occurrences: 10,
-    }
-  ]
-};
-
 // API service for interacting with the backend
 export class SurvaizeApiService {
   private baseUrl = '/api';
-  private useMockData = false;
 
-  constructor(useMockData = false) {
-    this.useMockData = useMockData;
+  constructor(backendUrl?: string) {
+    if (backendUrl) {
+      this.baseUrl = backendUrl;
+    }
   }
 
   // Read a questionnaire file (PDF or JSON)
@@ -89,13 +16,6 @@ export class SurvaizeApiService {
     onProgress?: (percent: number, message: string) => void
   ): Promise<Questionnaire> {
     console.log(`Reading file: ${file.name}`);
-    
-    if (this.useMockData) {
-      // For development/offline mode, return mock data
-      const delay = file.name.endsWith('.pdf') ? 3000 : 500; // Longer delay for PDFs
-      await new Promise(resolve => setTimeout(resolve, delay));
-      return mockQuestionnaire;
-    }
     
     try {
       const formData = new FormData();
@@ -113,28 +33,89 @@ export class SurvaizeApiService {
       }
 
       const { job_id } = await response.json();
+      console.log('Got job_id:', job_id);
 
-      return await new Promise<Questionnaire>((resolve, reject) => {
+      // Small delay to ensure the background task has started
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      return await new Promise<Questionnaire>(async (resolve, reject) => {
         const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const ws = new WebSocket(`${protocol}://${window.location.host}/api/questionnaire/read/${job_id}`);
+        const host = window.location.host;
+        
+        const wsUrl = `${protocol}://${host}/api/questionnaire/read/${job_id}`;
+        console.log('Connecting to WebSocket:', wsUrl);
+        
+        const ws = new WebSocket(wsUrl);
+        let isResolved = false;
+
+        // Set up timeout to catch silent failures
+        const timeout = setTimeout(() => {
+          if (!isResolved) {
+            if (ws.readyState == WebSocket.CONNECTING) {
+              console.error('WebSocket timeout: No response received within 30 seconds');
+              cleanup();
+              ws.close();
+              reject(new Error('Connection timeout: No response received from server within 30 seconds'));
+            }
+          }
+        }, 30000); // 30 second timeout
+
+        // Helper function to clean up and resolve/reject
+        const cleanup = () => {
+          isResolved = true;
+          clearTimeout(timeout);
+        };
+
+        ws.onopen = () => {
+          console.log('WebSocket connection opened successfully');
+          console.log('WebSocket state:', {
+            readyState: ws.readyState,
+            url: ws.url,
+            protocol: ws.protocol
+          });
+        };
 
         ws.onmessage = (event) => {
+          console.log('WebSocket message received:', event.data);
           const data = JSON.parse(event.data);
           if (data.progress !== undefined && onProgress) {
-            onProgress(data.progress, data.message);
+            onProgress(data.progress, data.message || '');
           }
           if (data.questionnaire) {
+            console.log('Received questionnaire data, closing WebSocket');
+            cleanup();
             ws.close();
             resolve(data.questionnaire as Questionnaire);
           } else if (data.error) {
+            console.log('Received error, closing WebSocket:', data.error);
+            cleanup();
             ws.close();
             reject(new Error(data.error));
           }
         };
 
-        ws.onerror = () => {
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          console.log('WebSocket state at error:', {
+            readyState: ws.readyState,
+            url: ws.url,
+            protocol: ws.protocol
+          });
+          cleanup();
           ws.close();
-          reject(new Error('WebSocket error'));
+          reject(new Error('WebSocket connection failed'));
+        };
+
+        ws.onclose = (event) => {
+          console.log('WebSocket closed:', event.code, event.reason, 'wasClean:', event.wasClean);
+          if (!isResolved) {
+            cleanup();
+            if (!event.wasClean && event.code !== 1000) {
+              reject(new Error(`WebSocket connection closed unexpectedly: ${event.code} ${event.reason}`));
+            } else {
+              reject(new Error('WebSocket connection closed before receiving data'));
+            }
+          }
         };
       });
     } catch (error) {
@@ -146,20 +127,7 @@ export class SurvaizeApiService {
   // Save a questionnaire in specified format
   async saveQuestionnaire(questionnaire: Questionnaire, format: 'json' | 'cspro'): Promise<Blob> {
     console.log(`Saving questionnaire in ${format} format`);
-    
-    if (this.useMockData) {
-      // For development/offline mode, return mock data
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      if (format === 'json') {
-        const json = JSON.stringify(questionnaire, null, 2);
-        return new Blob([json], { type: 'application/json' });
-      } else {
-        const message = `This would be a CSPro format file for "${questionnaire.title}"`;
-        return new Blob([message], { type: 'text/plain' });
-      }
-    }
-    
+        
     try {
       const response = await fetch(`${this.baseUrl}/questionnaire/save/${format}`, {
         method: 'POST',

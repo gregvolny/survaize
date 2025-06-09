@@ -27,7 +27,6 @@ function App(): JSX.Element {
       <div className="app-container">
         <header className="app-header">
           <h1>Survaize</h1>
-          <p>Survey Automation Tool</p>
           <div className={`api-status ${isApiConnected === false ? 'offline' : ''}`}>
             {isApiConnected === null ? (
               <span className="loading">Connecting to API...</span>

@@ -105,12 +105,15 @@ export const OpenQuestionnaire: React.FC = () => {
     setProcessingPdf(fileExt === 'pdf');
 
     try {
-      const loadedQuestionnaire = await apiService.current.readQuestionnaire(file, (p) => {
-        setProgress(p);
+      const loadedQuestionnaire = await apiService.current.readQuestionnaire(file, (progress, message) => {
+        console.log('Progress update:', progress, message);
+        setProgress(progress);
       });
+      console.log('Questionnaire loaded successfully:', loadedQuestionnaire);
       setProgress(100);
       setQuestionnaire(loadedQuestionnaire);
     } catch (err) {
+      console.error('Error loading questionnaire:', err);
       setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setProcessingPdf(false);

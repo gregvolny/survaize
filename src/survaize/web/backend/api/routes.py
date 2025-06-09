@@ -112,10 +112,7 @@ async def read_questionnaire(
             finally:
                 queue.put_nowait(None)
 
-        async def run_job() -> None:
-            await process_job()
-
-        background_tasks.add_task(asyncio.run, run_job())
+        background_tasks.add_task(process_job)
 
         return QuestionnaireJobResponse(job_id=job_id)
     except Exception as e:
@@ -126,21 +123,29 @@ async def read_questionnaire(
 @router.websocket("/questionnaire/read/{job_id}")
 async def questionnaire_progress(job_id: str, websocket: WebSocket) -> None:
     """Stream questionnaire reading progress updates."""
+    logger.info(f"WebSocket connection requested for job_id: {job_id}")
     await websocket.accept()
+    logger.info(f"WebSocket connection accepted for job_id: {job_id}")
+    
     queue = progress_queues.get(job_id)
     if queue is None:
+        logger.warning(f"No queue found for job_id: {job_id}")
         await websocket.close(code=1008)
         return
 
     try:
         while True:
             update = await queue.get()
+            logger.info(f"Sending update for job_id {job_id}: {update}")
             if update is None:
                 break
             await websocket.send_json(update)
             if "error" in update or "questionnaire" in update:
                 break
+    except Exception as e:
+        logger.error(f"Error in WebSocket for job_id {job_id}: {e}")
     finally:
+        logger.info(f"Closing WebSocket for job_id: {job_id}")
         await websocket.close()
         progress_queues.pop(job_id, None)
 
