@@ -84,7 +84,10 @@ export class SurvaizeApiService {
   }
 
   // Read a questionnaire file (PDF or JSON)
-  async readQuestionnaire(file: File): Promise<Questionnaire> {
+  async readQuestionnaire(
+    file: File,
+    onProgress?: (percent: number, message: string) => void
+  ): Promise<Questionnaire> {
     console.log(`Reading file: ${file.name}`);
     
     if (this.useMockData) {
@@ -99,31 +102,41 @@ export class SurvaizeApiService {
       formData.append('file', file);
       formData.append('format', file.name.endsWith('.pdf') ? 'pdf' : 'json');
       
-      // Set a longer timeout for PDF files as they require AI processing
-      // TODO: use a better API that supports long operations with progress
-      const timeoutMs = file.name.endsWith('.pdf') ? 600000 : 10000; // 60s for PDFs, 10s for JSON
-      
-      // Create a promise that rejects after the timeout
-      const timeoutPromise = new Promise<Response>((_, reject) => {
-        setTimeout(() => reject(new Error('Request timed out')), timeoutMs);
-      });
-      
-      // Create the actual fetch promise
-      const fetchPromise = fetch(`${this.baseUrl}/questionnaire/read`, {
+      const response = await fetch(`${this.baseUrl}/questionnaire/read`, {
         method: 'POST',
         body: formData,
       });
-      
-      // Race the fetch against the timeout
-      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to read questionnaire');
       }
-      
-      const data = await response.json();
-      return data.questionnaire;
+
+      const { job_id } = await response.json();
+
+      return await new Promise<Questionnaire>((resolve, reject) => {
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(`${protocol}://${window.location.host}/api/questionnaire/read/${job_id}`);
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.progress !== undefined && onProgress) {
+            onProgress(data.progress, data.message);
+          }
+          if (data.questionnaire) {
+            ws.close();
+            resolve(data.questionnaire as Questionnaire);
+          } else if (data.error) {
+            ws.close();
+            reject(new Error(data.error));
+          }
+        };
+
+        ws.onerror = () => {
+          ws.close();
+          reject(new Error('WebSocket error'));
+        };
+      });
     } catch (error) {
       console.error('Error reading questionnaire:', error);
       throw error;
