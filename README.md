@@ -11,7 +11,7 @@ Survaize is a tool that automatically converts "paper" questionnaires into inter
 
 ## Installation
 
-Eventually this will be published to PyPy but for now follow the instructions in [installation.md](installation.md).
+Eventually this will be published to PyPI but for now follow the instructions in [installation.md](installation.md).
 
 ## Setup
 Survaize requires an OpenAI API key. You can specify it using the --api-key parameter or by setting in the OPENAI_API_KEY environment variable.
