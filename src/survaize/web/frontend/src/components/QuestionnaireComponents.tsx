@@ -102,52 +102,22 @@ export const OpenQuestionnaire: React.FC = () => {
     setIsLoading(true);
     setError(null);
     
-    // For PDFs, show extended processing feedback since they take longer
-    if (fileExt === 'pdf') {
-      setProcessingPdf(true);
-      // Simulate progress for PDF processing (in a real app, this would come from the server)
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          // Max out at 90% until we get real completion
-          const newProgress = prev + (90 - prev) * 0.1;
-          return Math.min(newProgress, 90);
-        });
-      }, 500);
-      
-      try {
-        const loadedQuestionnaire = await apiService.current.readQuestionnaire(file);
-        setProgress(100); // Complete the progress
-        setTimeout(() => {
-          setQuestionnaire(loadedQuestionnaire);
-          setProcessingPdf(false);
-          setProgress(0);
-          setIsLoading(false);
-        }, 500);
-      } catch (err) {
-        setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        setProcessingPdf(false);
-        setProgress(0);
-        setIsLoading(false);
-      } finally {
-        clearInterval(interval);
-        // Reset the file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-      }
-    } else {
-      // For JSON files, use the standard loading
-      try {
-        const loadedQuestionnaire = await apiService.current.readQuestionnaire(file);
-        setQuestionnaire(loadedQuestionnaire);
-      } catch (err) {
-        setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      } finally {
-        setIsLoading(false);
-        // Reset the file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
+    setProcessingPdf(fileExt === 'pdf');
+
+    try {
+      const loadedQuestionnaire = await apiService.current.readQuestionnaire(file, (p) => {
+        setProgress(p);
+      });
+      setProgress(100);
+      setQuestionnaire(loadedQuestionnaire);
+    } catch (err) {
+      setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setProcessingPdf(false);
+      setProgress(0);
+      setIsLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
     }
   };

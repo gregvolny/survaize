@@ -1,6 +1,7 @@
 """Module defining the document reading layer of the pipeline."""
 
 import logging
+from collections.abc import Callable
 from pathlib import Path
 from typing import IO
 
@@ -29,7 +30,11 @@ class PDFReader:
         """
         self.interpreter: AIQuestionnaireInterpreter = interpreter
 
-    def read(self, file: IO[bytes]) -> Questionnaire:
+    def read(
+        self,
+        file: IO[bytes],
+        progress_callback: Callable[[int, str], None] | None = None,
+    ) -> Questionnaire:
         """Read a PDF document and extract its content.
 
         Args:
@@ -39,9 +44,17 @@ class PDFReader:
             A Questionnaire containing the extracted content
         """
 
+        if progress_callback:
+            progress_callback(0, "Extracting pages")
         pages = self._extract_pages(file)
-
-        texts = [self._process_page(page) for page in pages]
+        if progress_callback:
+            progress_callback(1, f"Extracted {len(pages)} pages")
+        texts: list[str] = []
+        for i, page in enumerate(pages, start=1):
+            texts.append(self._process_page(page))
+            if progress_callback:
+                percent = int(10 * i / len(pages))
+                progress_callback(percent, f"Processed page {i}/{len(pages)}")
 
         scanned_questionnaire = ScannedQuestionnaire(
             pages=pages,
@@ -49,7 +62,20 @@ class PDFReader:
             source_path=Path("<in-memory>"),
         )
 
-        return self.interpreter.interpret(scanned_questionnaire)
+        if progress_callback:
+            progress_callback(10, "Interpreting questionnaire")
+
+            def scaled_progress(percent: int, message: str) -> None:
+                progress_callback(10 + int(percent * 0.9), message)
+
+            questionnaire = self.interpreter.interpret(
+                scanned_questionnaire,
+                scaled_progress,
+            )
+            progress_callback(100, "Completed")
+        else:
+            questionnaire = self.interpreter.interpret(scanned_questionnaire)
+        return questionnaire
 
     def _extract_pages(self, pdf_file: IO[bytes]) -> list[Image.Image]:
         """Convert PDF pages to images.

@@ -1,10 +1,13 @@
+import asyncio
 import logging
 import shutil
 import tempfile
+from io import BytesIO
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypedDict
+from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile, WebSocket
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
@@ -16,6 +19,20 @@ from survaize.writer.writer_factory import WriterFactory
 
 router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
+
+# Map job_id to asyncio.Queue for streaming progress updates
+
+
+class ProgressMessage(TypedDict, total=False):
+    """Message sent over the progress websocket."""
+
+    progress: int
+    message: str
+    questionnaire: dict[str, object]
+    error: str
+
+
+progress_queues: dict[str, asyncio.Queue[ProgressMessage | None]] = {}
 
 
 def get_llm_config() -> LLMConfig:
@@ -44,20 +61,19 @@ async def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
+class QuestionnaireJobResponse(BaseModel):
+    """Response model containing a job identifier."""
+
+    job_id: str
 
 
-class QuestionnaireResponse(BaseModel):
-    """Response model for a questionnaire."""
-
-    questionnaire: Questionnaire
-
-
-@router.post("/questionnaire/read", response_model=QuestionnaireResponse)
+@router.post("/questionnaire/read", response_model=QuestionnaireJobResponse)
 async def read_questionnaire(
     file: UploadFile,
     format: Annotated[Literal["json", "pdf"], Form()],
     reader_factory: Annotated[ReaderFactory, Depends(get_reader_factory)],
-) -> QuestionnaireResponse:
+    background_tasks: BackgroundTasks,
+) -> QuestionnaireJobResponse:
     """
     Read a questionnaire from a file (PDF or JSON).
 
@@ -68,15 +84,65 @@ async def read_questionnaire(
         The questionnaire from the file
     """
     try:
-        reader = reader_factory.get(format)
+        contents = await file.read()
+        job_id = str(uuid4())
+        queue: asyncio.Queue[ProgressMessage | None] = asyncio.Queue()
+        progress_queues[job_id] = queue
 
-        file.file.seek(0)
-        questionnaire = reader.read(file.file)
-        return QuestionnaireResponse(questionnaire=questionnaire)
+        async def process_job() -> None:
+            try:
+                reader = reader_factory.get(format)
+
+                def progress(percent: int, message: str) -> None:
+                    queue.put_nowait({"progress": percent, "message": message})
+
+                questionnaire = await asyncio.to_thread(
+                    reader.read,
+                    BytesIO(contents),
+                    progress,
+                )
+                queue.put_nowait(
+                    {
+                        "progress": 100,
+                        "questionnaire": questionnaire.model_dump(),
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001
+                queue.put_nowait({"error": str(exc)})
+            finally:
+                queue.put_nowait(None)
+
+        async def run_job() -> None:
+            await process_job()
+
+        background_tasks.add_task(asyncio.run, run_job())
+
+        return QuestionnaireJobResponse(job_id=job_id)
     except Exception as e:
-        # TODO: More fine-grained error handling (consistent exceptions from readers)
-        logger.error(f"Error reading questionnaire: {str(e)}")
+        logger.error(f"Error scheduling questionnaire read: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error reading questionnaire: {str(e)}") from e
+
+
+@router.websocket("/questionnaire/read/{job_id}")
+async def questionnaire_progress(job_id: str, websocket: WebSocket) -> None:
+    """Stream questionnaire reading progress updates."""
+    await websocket.accept()
+    queue = progress_queues.get(job_id)
+    if queue is None:
+        await websocket.close(code=1008)
+        return
+
+    try:
+        while True:
+            update = await queue.get()
+            if update is None:
+                break
+            await websocket.send_json(update)
+            if "error" in update or "questionnaire" in update:
+                break
+    finally:
+        await websocket.close()
+        progress_queues.pop(job_id, None)
 
 
 @router.post("/questionnaire/save/{format}")

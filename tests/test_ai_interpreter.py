@@ -22,6 +22,18 @@ def mock_document() -> ScannedQuestionnaire:
 
 
 @pytest.fixture
+def mock_document_two_pages() -> ScannedQuestionnaire:
+    """Create a two-page test questionnaire."""
+    img = Image.new("RGB", (100, 100), color="white")
+    document = ScannedQuestionnaire(
+        pages=[img, img],
+        extracted_text=["OCR page 1", "OCR page 2"],
+        source_path=Path("test.pdf"),
+    )
+    return document
+
+
+@pytest.fixture
 def mock_llm_config() -> LLMConfig:
     """Create a mock LLM configuration."""
     return LLMConfig(
@@ -111,3 +123,36 @@ def test_max_retries_exceeded(mock_document: ScannedQuestionnaire, mock_llm_conf
 
         assert "Unable to validate response after 3 attempts" in str(error)
         assert mock_create.call_count == 3
+
+
+def test_interpret_reports_progress(mock_document_two_pages: ScannedQuestionnaire, mock_llm_config: LLMConfig) -> None:
+    """Verify interpret emits progress updates for each page."""
+    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+        mock_client = MagicMock()
+        mock_openai.return_value = mock_client
+
+        completion1 = MagicMock()
+        completion1.choices[0].message.content = json.dumps(
+            {
+                "title": "Test Survey",
+                "id_fields": ["id"],
+                "sections": [],
+            }
+        )
+
+        completion2 = MagicMock()
+        completion2.choices[0].message.content = json.dumps({"sections": []})
+
+        mock_client.chat.completions.create.side_effect = [completion1, completion2]
+
+        progress: list[int] = []
+
+        def record(percent: int, _msg: str) -> None:
+            progress.append(percent)
+
+        interpreter = AIQuestionnaireInterpreter(mock_llm_config)
+        interpreter.interpret(mock_document_two_pages, record)
+
+        assert progress[0] == 0
+        assert progress[-1] == 100
+        assert len(progress) == 3
