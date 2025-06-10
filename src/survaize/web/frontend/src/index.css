@@ -97,10 +97,6 @@ h1 {
   color: var(--secondary-color);
 }
 
-.api-status .online {
-  color: var(--success-color);
-}
-
 .api-status .offline {
   color: var(--error-color);
   font-weight: 500;
@@ -276,6 +272,16 @@ button:focus-visible {
   color: var(--secondary-color);
   font-family: monospace;
   font-size: 0.875rem;
+}
+
+.id-marker {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: lowercase;
 }
 
 .question-type {

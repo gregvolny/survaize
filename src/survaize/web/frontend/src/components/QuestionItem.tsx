@@ -3,9 +3,10 @@ import { Question, QuestionType } from "../models/questionnaire";
 
 interface QuestionItemProps {
   question: Question;
+  isIdField?: boolean;
 }
 
-const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
+const QuestionItem: React.FC<QuestionItemProps> = ({ question, isIdField = false }) => {
   let details: React.ReactNode = null;
 
   switch (question.type) {
@@ -67,6 +68,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question }) => {
       <div className="question-header">
         <span className="question-number">{question.number}</span>
         <span className="question-id">[{question.id}]</span>
+        {isIdField && <span className="id-marker">id</span>}
         <span className="question-type">{question.type}</span>
       </div>
       <div className="question-text">{question.text}</div>

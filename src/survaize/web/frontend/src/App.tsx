@@ -33,13 +33,14 @@ const App: React.FC = () => {
             <h1>Survaize</h1>
             <div
               className={`api-status ${
-                isApiConnected === false ? "offline" : ""
+              isApiConnected === false ? "offline" : ""
               }`}
+              style={{ display: isApiConnected === true ? 'none' : 'block' }}
             >
               {isApiConnected === null ? (
-                <span className="loading">Connecting to API...</span>
+              <span className="loading">Connecting to API...</span>
               ) : isApiConnected === false ? (
-                <span className="offline">{apiStatus}</span>
+              <span className="offline">{apiStatus}</span>
               ) : null}
             </div>
           </header>
