@@ -1,7 +1,6 @@
 import { useState, useEffect, JSX } from 'react';
 import { QuestionnaireProvider, OpenQuestionnaire, SaveQuestionnaire } from './components/QuestionnaireComponents';
 import { QuestionnaireDisplay } from './components/QuestionnaireDisplay';
-import { QuestionnaireJson } from './components/QuestionnaireJson';
 
 function App(): JSX.Element {
   const [apiStatus, setApiStatus] = useState<string>('');
@@ -43,7 +42,6 @@ function App(): JSX.Element {
         
         <div className="main-content">
           <QuestionnaireDisplay />
-          <QuestionnaireJson />
         </div>
       </div>
     </QuestionnaireProvider>
