@@ -88,6 +88,8 @@ class AIQuestionnaireInterpreter:
 
         if current_state is None:
             raise ValueError("No valid questionnaire found in the document")
+        if progress_callback:
+            progress_callback(100, "Completed")
         return current_state
 
     def _process_first_page(self, image: Image.Image, ocr_text: str) -> Questionnaire:

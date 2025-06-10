@@ -22,6 +22,8 @@ uv sync --all-extras --dev
 cd web/frontend
 npm install
 npm run build
+npm run lint  # run ESLint checks for the React frontend
+npm test      # run Vitest unit tests
 
 # Run the application (add --help to see command options)
 uv run survaize
@@ -74,12 +76,19 @@ The web UI frontend is a React application built with Vite. It lives in the web/
 directory. When you run `npm run build` in the web/frontend directory, it will compile the
 frontend assets and place them in the web/static directory, which is served by the backend.
 
-If you want to edit the frontend code, you can start the frontend development server with hot 
+If you want to edit the frontend code, you can start the frontend development server with hot
 reload with:
 
 ```shell
 cd web/frontend
 npm run dev
+```
+
+Run ESLint and unit tests for the frontend with:
+
+```shell
+npm run lint
+npm test
 ```
 
 This will start the frontend development server with hot reload on port 3000 by default. You can then
