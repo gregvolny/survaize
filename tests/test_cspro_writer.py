@@ -17,22 +17,21 @@ def test_cspro_writer_generates_expected_files(tmp_path: Path) -> None:
     """CSProWriter.write should generate files matching the cspro fixtures."""
     # Read questionnaire from JSON fixture
     reader = JSONReader()
-    questionnaire = reader.read(json_fixture_file)
+    with open(json_fixture_file, "rb") as f:
+        questionnaire = reader.read(f)
 
     # Prepare output path
-    output_file = tmp_path / f"{questionnaire.title}.cspro"
+    output_file = tmp_path / "PopstanHouseholdSurvey"
 
     # Run writer
     writer = CSProWriter()
     writer.write(questionnaire, output_file)
 
-    # Determine generated directory using sanitized application name
-    generated_dir = tmp_path / "PopstanHouseholdSurvey"
-    assert generated_dir.is_dir(), f"Generated directory not found: {generated_dir}"
+    assert output_file.is_dir(), f"Generated directory not found: {output_file}"
 
     # Compare each fixture file with generated file
     for fixture_path in sorted(cspro_fixture_dir.iterdir()):
-        gen_path = generated_dir / fixture_path.name
+        gen_path = output_file / fixture_path.name
         assert gen_path.exists(), f"Missing generated file: {gen_path.name}"
         # Compare contents
         expected = read_text(fixture_path)
@@ -40,7 +39,7 @@ def test_cspro_writer_generates_expected_files(tmp_path: Path) -> None:
         assert actual == expected, f"Contents differ for file {fixture_path.name}"
 
     # Ensure no extra files were generated
-    generated_files = {p.name for p in generated_dir.iterdir()}
+    generated_files = {p.name for p in output_file.iterdir()}
     fixture_files = {p.name for p in cspro_fixture_dir.iterdir()}
     assert generated_files == fixture_files, (
         f"Unexpected generated files: {sorted(generated_files - fixture_files)}; "

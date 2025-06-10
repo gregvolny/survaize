@@ -3,7 +3,7 @@
 import base64
 import json
 import logging
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from io import BytesIO
 from typing import TypeVar
 
@@ -49,7 +49,11 @@ class AIQuestionnaireInterpreter:
             )
         self.max_retries: int = max_retries
 
-    def interpret(self, scanned_document: ScannedQuestionnaire) -> Questionnaire:
+    def interpret(
+        self,
+        scanned_document: ScannedQuestionnaire,
+        progress_callback: Callable[[int, str], None] | None = None,
+    ) -> Questionnaire:
         """Interpret a questionnaire document into a structured format.
 
         Args:
@@ -64,7 +68,14 @@ class AIQuestionnaireInterpreter:
         # Process each page
         total_pages = len(scanned_document.pages)
 
-        for i, (page, text) in enumerate(zip(scanned_document.pages, scanned_document.extracted_text, strict=False), 1):
+        for i, (page, text) in enumerate(
+            zip(scanned_document.pages, scanned_document.extracted_text, strict=False),
+            1,
+        ):
+            if progress_callback:
+                percent = int(100 * (i - 1) / total_pages)
+                progress_callback(percent, f"Examining page {i}/{total_pages}")
+
             logger.info(f"Examining page {i}/{total_pages}")
             if i == 1:
                 # Process the first page
@@ -77,6 +88,8 @@ class AIQuestionnaireInterpreter:
 
         if current_state is None:
             raise ValueError("No valid questionnaire found in the document")
+        if progress_callback:
+            progress_callback(100, "Completed")
         return current_state
 
     def _process_first_page(self, image: Image.Image, ocr_text: str) -> Questionnaire:
