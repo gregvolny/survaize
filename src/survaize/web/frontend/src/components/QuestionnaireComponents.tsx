@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Questionnaire } from '../models/questionnaire';
-import { SurvaizeApiService } from '../services/api';
+import React, { useState, useRef, useEffect } from "react";
+import { Questionnaire } from "../models/questionnaire";
+import { SurvaizeApiService } from "../services/api";
 
 interface QuestionnaireContextType {
   questionnaire: Questionnaire | null;
   setQuestionnaire: (questionnaire: Questionnaire | null) => void;
-  isSaving: boolean;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   loadProgress: number;
@@ -17,36 +16,38 @@ interface QuestionnaireContextType {
 }
 
 // Create context with default values
-export const QuestionnaireContext = React.createContext<QuestionnaireContextType>({
-  questionnaire: null,
-  setQuestionnaire: () => {},
-  isSaving: false,
-  isLoading: false,
-  setIsLoading: () => {},
-  loadProgress: 0,
-  setLoadProgress: () => {},
-  loadMessage: '',
-  setLoadMessage: () => {},
-  errorMessage: null,
-  setErrorMessage: () => {}
-});
+export const QuestionnaireContext =
+  React.createContext<QuestionnaireContextType>({
+    questionnaire: null,
+    setQuestionnaire: () => {},
+    isLoading: false,
+    setIsLoading: () => {},
+    loadProgress: 0,
+    setLoadProgress: () => {},
+    loadMessage: "",
+    setLoadMessage: () => {},
+    errorMessage: null,
+    setErrorMessage: () => {},
+  });
 
 interface QuestionnaireProviderProps {
   children: React.ReactNode;
 }
 
-export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({ children }) => {
-  const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({
+  children,
+}) => {
+  const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
-  const [loadMessage, setLoadMessage] = useState('');
+  const [loadMessage, setLoadMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const value = {
     questionnaire,
     setQuestionnaire,
-    isSaving,
     isLoading,
     setIsLoading,
     loadProgress,
@@ -54,7 +55,7 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({ ch
     loadMessage,
     setLoadMessage,
     errorMessage,
-    setErrorMessage
+    setErrorMessage,
   };
 
   return (
@@ -68,7 +69,9 @@ export const QuestionnaireProvider: React.FC<QuestionnaireProviderProps> = ({ ch
 export const useQuestionnaire = () => {
   const context = React.useContext(QuestionnaireContext);
   if (context === undefined) {
-    throw new Error('useQuestionnaire must be used within a QuestionnaireProvider');
+    throw new Error(
+      "useQuestionnaire must be used within a QuestionnaireProvider",
+    );
   }
   return context;
 };
@@ -80,35 +83,30 @@ export const OpenQuestionnaire: React.FC = () => {
     isLoading,
     setIsLoading,
     setLoadProgress,
-    setLoadMessage
+    setLoadMessage,
   } = useQuestionnaire();
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Check if the API is available or if we're working in offline mode
-  const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const apiService = useRef(new SurvaizeApiService(isOfflineMode));
+
+  const apiService = useRef(new SurvaizeApiService());
 
   // Check API connectivity on mount
   useEffect(() => {
     const checkApiConnection = async () => {
       try {
-        const response = await fetch('/api/health');
-        const isOffline = !response.ok;
-        setIsOfflineMode(isOffline);
-        apiService.current = new SurvaizeApiService(isOffline);
+        await fetch("/api/health");
+        apiService.current = new SurvaizeApiService();
       } catch (error) {
-        console.warn('API connection failed, using mock data');
-        setIsOfflineMode(true);
-        apiService.current = new SurvaizeApiService(true);
+        console.error("API connection failed", error);
+        apiService.current = new SurvaizeApiService();
       }
     };
-    
+
     checkApiConnection();
   }, []);
 
   const [processingPdf, setProcessingPdf] = useState(false);
-  
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) {
@@ -116,37 +114,42 @@ export const OpenQuestionnaire: React.FC = () => {
     }
 
     const file = files[0];
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
 
-    if (fileExt !== 'pdf' && fileExt !== 'json') {
-      setError('Unsupported file format. Please select a PDF or JSON file.');
+    if (fileExt !== "pdf" && fileExt !== "json") {
+      setError("Unsupported file format. Please select a PDF or JSON file.");
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    
-    setProcessingPdf(fileExt === 'pdf');
+
+    setProcessingPdf(fileExt === "pdf");
 
     try {
-      const loadedQuestionnaire = await apiService.current.readQuestionnaire(file, (progress, message) => {
-        console.log('Progress update:', progress, message);
-        setLoadProgress(progress);
-        setLoadMessage(message);
-      });
-      console.log('Questionnaire loaded successfully:', loadedQuestionnaire);
+      const loadedQuestionnaire = await apiService.current.readQuestionnaire(
+        file,
+        (progress, message) => {
+          console.log("Progress update:", progress, message);
+          setLoadProgress(progress);
+          setLoadMessage(message);
+        },
+      );
+      console.log("Questionnaire loaded successfully:", loadedQuestionnaire);
       setLoadProgress(100);
       setQuestionnaire(loadedQuestionnaire);
     } catch (err) {
-      console.error('Error loading questionnaire:', err);
-      setError(`Failed to load questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.error("Error loading questionnaire:", err);
+      setError(
+        `Failed to load questionnaire: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     } finally {
       setProcessingPdf(false);
       setLoadProgress(0);
-      setLoadMessage('');
+      setLoadMessage("");
       setIsLoading(false);
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -162,7 +165,7 @@ export const OpenQuestionnaire: React.FC = () => {
       <input
         type="file"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onChange={handleFileChange}
         accept=".pdf,.json"
       />
@@ -171,7 +174,11 @@ export const OpenQuestionnaire: React.FC = () => {
         disabled={isLoading}
         className="action-button"
       >
-        {isLoading ? (processingPdf ? 'Processing PDF...' : 'Opening...') : 'Open Questionnaire'}
+        {isLoading
+          ? processingPdf
+            ? "Processing PDF..."
+            : "Opening..."
+          : "Open Questionnaire"}
       </button>
       {error && <div className="error-message">{error}</div>}
     </div>
@@ -183,32 +190,27 @@ export const SaveQuestionnaire: React.FC = () => {
   const { questionnaire } = useQuestionnaire();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // Check if the API is available or if we're working in offline mode
-  const [isOfflineMode, setIsOfflineMode] = useState(false);
-  const apiService = useRef(new SurvaizeApiService(isOfflineMode));
+
+  const apiService = useRef(new SurvaizeApiService());
 
   // Check API connectivity on mount
   useEffect(() => {
     const checkApiConnection = async () => {
       try {
-        const response = await fetch('/api/health');
-        const isOffline = !response.ok;
-        setIsOfflineMode(isOffline);
-        apiService.current = new SurvaizeApiService(isOffline);
+        await fetch("/api/health");
+        apiService.current = new SurvaizeApiService();
       } catch (error) {
-        console.warn('API connection failed, using mock data');
-        setIsOfflineMode(true);
-        apiService.current = new SurvaizeApiService(true);
+        console.error("API connection failed", error);
+        apiService.current = new SurvaizeApiService();
       }
     };
-    
+
     checkApiConnection();
   }, []);
 
-  const handleSave = async (format: 'json' | 'cspro') => {
+  const handleSave = async (format: "json" | "cspro") => {
     if (!questionnaire) {
-      setError('No questionnaire to save. Please open a questionnaire first.');
+      setError("No questionnaire to save. Please open a questionnaire first.");
       return;
     }
 
@@ -216,31 +218,26 @@ export const SaveQuestionnaire: React.FC = () => {
     setError(null);
 
     try {
-      // Show a warning if in offline mode and trying to save as CSPro
-      if (isOfflineMode && format === 'cspro') {
-        const confirmOffline = window.confirm(
-          'You are in offline mode. CSPro conversion requires a server connection. Continue with a simplified version?'
-        );
-        if (!confirmOffline) {
-          setIsLoading(false);
-          return;
-        }
-      }
+      const blob = await apiService.current.saveQuestionnaire(
+        questionnaire,
+        format,
+      );
 
-      const blob = await apiService.current.saveQuestionnaire(questionnaire, format);
-      
       // Create a download link and trigger download
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      const fileExtension = format === 'json' ? 'json' : (isOfflineMode ? 'txt' : 'zip');
-      a.download = `${questionnaire.title.replace(/\s+/g, '_')}.${fileExtension}`;
+      const fileExtension =
+        format === "json" ? "json" : "zip";
+      a.download = `${questionnaire.title.replace(/\s+/g, "_")}.${fileExtension}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(`Failed to save questionnaire: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `Failed to save questionnaire: ${err instanceof Error ? err.message : "Unknown error"}`,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -248,19 +245,19 @@ export const SaveQuestionnaire: React.FC = () => {
 
   return (
     <div className="save-actions">
-      <button 
-        onClick={() => handleSave('json')} 
+      <button
+        onClick={() => handleSave("json")}
         disabled={isLoading || !questionnaire}
         className="action-button"
       >
-        {isLoading ? 'Saving...' : 'Save as JSON'}
+        {isLoading ? "Saving..." : "Save as JSON"}
       </button>
-      <button 
-        onClick={() => handleSave('cspro')} 
+      <button
+        onClick={() => handleSave("cspro")}
         disabled={isLoading || !questionnaire}
         className="action-button"
       >
-        {isLoading ? 'Saving...' : 'Save as CSPro'}
+        {isLoading ? "Saving..." : "Save as CSPro"}
       </button>
       {error && <div className="error-message">{error}</div>}
     </div>

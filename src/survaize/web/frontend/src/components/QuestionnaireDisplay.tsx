@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useQuestionnaire } from './QuestionnaireComponents';
-import { Question, QuestionType } from '../models/questionnaire';
-import RobotReadingAnimation from './RobotReadingAnimation';
+import React, { useState } from "react";
+import { useQuestionnaire } from "./QuestionnaireComponents";
+import { Question, QuestionType } from "../models/questionnaire";
+import RobotReadingAnimation from "./RobotReadingAnimation";
 
 // Helper function to render different question types
 const renderQuestion = (question: Question) => {
@@ -14,7 +14,7 @@ const renderQuestion = (question: Question) => {
         <div className="question-options">
           <span className="option-label">Options:</span>
           <ul>
-            {question.options.map(option => (
+            {question.options.map((option) => (
               <li key={option.code}>
                 <code>{option.code}</code>: {option.label}
               </li>
@@ -23,22 +23,27 @@ const renderQuestion = (question: Question) => {
         </div>
       );
       break;
-      
+
     case QuestionType.NUMERIC:
       details = (
         <div className="question-constraints">
           {question.min_value !== null && <div>Min: {question.min_value}</div>}
           {question.max_value !== null && <div>Max: {question.max_value}</div>}
-          {question.decimal_places !== null && <div>Decimal places: {question.decimal_places}</div>}
+          {question.decimal_places !== null && (
+            <div>Decimal places: {question.decimal_places}</div>
+          )}
         </div>
       );
       break;
-      
+
     case QuestionType.TEXT:
-      details = question.max_length ? 
-        <div className="question-constraints">Max length: {question.max_length}</div> : null;
+      details = question.max_length ? (
+        <div className="question-constraints">
+          Max length: {question.max_length}
+        </div>
+      ) : null;
       break;
-      
+
     case QuestionType.DATE:
       details = (
         <div className="question-constraints">
@@ -47,7 +52,7 @@ const renderQuestion = (question: Question) => {
         </div>
       );
       break;
-      
+
     case QuestionType.LOCATION:
       details = (
         <div className="question-constraints">
@@ -64,21 +69,21 @@ const renderQuestion = (question: Question) => {
         <span className="question-id">[{question.id}]</span>
         <span className="question-type">{question.type}</span>
       </div>
-      
+
       <div className="question-text">{question.text}</div>
-      
+
       {question.instructions && (
         <div className="question-instructions">
           <em>Instructions: {question.instructions}</em>
         </div>
       )}
-      
+
       {question.universe && (
         <div className="question-universe">
           <strong>Universe:</strong> {question.universe}
         </div>
       )}
-      
+
       {details}
     </div>
   );
@@ -88,9 +93,10 @@ export const QuestionnaireDisplay: React.FC = () => {
   const [showRaw, setShowRaw] = useState<boolean>(false);
 
   const toggleView = (): void => {
-    setShowRaw(prev => !prev);
+    setShowRaw((prev) => !prev);
   };
-  const { questionnaire, isLoading, loadProgress, loadMessage } = useQuestionnaire();
+  const { questionnaire, isLoading, loadProgress, loadMessage } =
+    useQuestionnaire();
 
   if (isLoading) {
     return (
@@ -124,15 +130,15 @@ export const QuestionnaireDisplay: React.FC = () => {
           <h2>{questionnaire.title}</h2>
           {questionnaire.description && <p>{questionnaire.description}</p>}
           <div className="id-fields">
-            <strong>ID Fields:</strong> {questionnaire.id_fields.join(', ')}
+            <strong>ID Fields:</strong> {questionnaire.id_fields.join(", ")}
           </div>
         </div>
         <button
           className="icon-button"
           onClick={toggleView}
-          title={showRaw ? 'Show formatted view' : 'Show raw JSON'}
+          title={showRaw ? "Show formatted view" : "Show raw JSON"}
         >
-          {'{}'}
+          {"{}"}
         </button>
       </div>
 
@@ -142,10 +148,12 @@ export const QuestionnaireDisplay: React.FC = () => {
         </pre>
       ) : (
         <div className="sections-container">
-          {questionnaire.sections.map(section => (
+          {questionnaire.sections.map((section) => (
             <div key={section.id} className="section">
               <div className="section-header">
-                <h3>{section.number}: {section.title}</h3>
+                <h3>
+                  {section.number}: {section.title}
+                </h3>
                 {section.description && <p>{section.description}</p>}
                 {section.universe && (
                   <div className="section-universe">
@@ -160,7 +168,7 @@ export const QuestionnaireDisplay: React.FC = () => {
               </div>
 
               <div className="questions-list">
-                {section.questions.map(question => renderQuestion(question))}
+                {section.questions.map((question) => renderQuestion(question))}
               </div>
             </div>
           ))}

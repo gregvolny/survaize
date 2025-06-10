@@ -23,6 +23,7 @@ cd web/frontend
 npm install
 npm run build
 npm run lint  # run ESLint checks for the React frontend
+npm run format  # format the frontend code with Prettier
 npm test      # run Vitest unit tests
 
 # Run the application (add --help to see command options)

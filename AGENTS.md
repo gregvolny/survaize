@@ -45,13 +45,35 @@ files should go under `src/survaize` or a suitable subpackage.
    ```bash
    uv run basedpyright
    ```
+6. For frontend development, navigate to the `web/frontend` directory and run:
+   ```bash
+   npm install
+   npm run dev
+   ```
+7. To build the frontend assets for production:
+   ```bash
+   npm run build
+   ```
+8. To run the frontend tests:
+   ```bash
+   npm run test
+   ```
+9. To run the frontend linter:
+   ```bash
+   npm run lint
+   ```
+10. To format the frontend code:
+    ```bash
+    npm run format
+    ```
 
 ## Working Approach
 - When updating or adding features, consult the architecture overview in
   `.github/copilot-instructions.md` for context about core components.
 - Keep documentation up to date when you change public behavior.
 - Follow the style rules above and ensure `uv run python devtools/lint.py` and
-  `uv run pytest` succeed before committing.
+  `uv run pytest` succeed before committing for backend code and `npm run format`,
+   `npm run lint` and `npm test` succeed for frontend code.
 
 ## Pull Requests
 - Include a summary of the changes and how they were tested.
