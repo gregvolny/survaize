@@ -14,9 +14,12 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
 
   switch (question.type) {
     case QuestionType.SINGLE_SELECT:
-    case QuestionType.MULTI_SELECT:
+    case QuestionType.MULTI_SELECT: {
+      const hasManyOptions = question.options.length > 8;
       details = (
-        <div className="question-options">
+        <div
+          className={`question-options${hasManyOptions ? " many-options" : ""}`}
+        >
           <span className="option-label">Options:</span>
           <ul>
             {question.options.map((option) => (
@@ -28,13 +31,13 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
         </div>
       );
       break;
+    }
     case QuestionType.NUMERIC: {
       const showRange =
         question.min_value !== null || question.max_value !== null;
       const minDisplay =
         question.min_value !== null ? question.min_value : "-∞";
       const maxDisplay = question.max_value !== null ? question.max_value : "∞";
-
       details = (
         <div className="question-constraints">
           {showRange && (
