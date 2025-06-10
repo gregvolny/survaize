@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuestionnaire } from './QuestionnaireComponents';
 import { Question, QuestionType } from '../models/questionnaire';
+import RobotReadingAnimation from './RobotReadingAnimation';
 
 // Helper function to render different question types
 const renderQuestion = (question: Question) => {
@@ -84,7 +85,24 @@ const renderQuestion = (question: Question) => {
 };
 
 export const QuestionnaireDisplay: React.FC = () => {
-  const { questionnaire } = useQuestionnaire();
+  const { questionnaire, isLoading, loadProgress, loadMessage } = useQuestionnaire();
+
+  if (isLoading) {
+    return (
+      <div className="questionnaire-loading">
+        <RobotReadingAnimation />
+        <p>
+          {loadMessage} ({Math.round(loadProgress)}%)
+        </p>
+        <div className="progress-bar-container">
+          <div
+            className="progress-bar"
+            style={{ width: `${loadProgress}%` }}
+          ></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!questionnaire) {
     return (
