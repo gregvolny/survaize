@@ -52,7 +52,7 @@ class PDFReader:
         texts: list[str] = []
         for i, page in enumerate(pages, start=1):
             if progress_callback:
-                percent = int(10 * (i  - 1) / len(pages))
+                percent = int(10 * (i - 1) / len(pages))
                 progress_callback(percent, f"Extracting image from page {i}/{len(pages)}")
             texts.append(self._process_page(page))
 

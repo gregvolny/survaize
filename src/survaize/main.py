@@ -2,6 +2,8 @@
 
 import logging
 import os
+import threading
+import webbrowser
 from pathlib import Path
 from typing import Literal
 
@@ -157,6 +159,12 @@ def convert(
     default="gpt-4.1",
     help="OpenAI API model name (can also be set via OPENAI_API_MODEL env var). Defaults to gpt-4.1",
 )
+@click.option(
+    "--no-browser",
+    is_flag=True,
+    default=False,
+    help="Do not open the web UI in a browser automatically",
+)
 def ui(
     host: str,
     port: int,
@@ -166,6 +174,7 @@ def ui(
     api_version: str | None,
     api_url: str | None,
     api_model: str,
+    no_browser: bool,
 ) -> None:
     """Start the Survaize web application server."""
     try:
@@ -185,7 +194,11 @@ def ui(
             os.environ["OPENAI_API_URL"] = api_url
         os.environ["OPENAI_API_MODEL"] = api_model
 
-        # TODO: launch browser automatically
+        if not no_browser:
+            url = f"http://{host}:{port}"
+            console.log(f"[green]Opening {url} in your browser...[/green]")
+            threading.Timer(1.0, webbrowser.open, args=(url,)).start()
+
         run_server(host=host, port=port, reload=reload)
     except Exception as e:
         console.log(f"[red]Error starting web server: {e}")

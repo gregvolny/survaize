@@ -28,6 +28,8 @@ uv run survaize
 
 # Start the web UI (default on port 8000)
 uv run survaize ui
+# Disable automatic browser launch
+uv run survaize ui --no-browser
 
 # Linting:
 uv run python devtools/lint.py
