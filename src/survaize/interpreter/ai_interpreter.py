@@ -68,13 +68,14 @@ class AIQuestionnaireInterpreter:
         # Process each page
         total_pages = len(scanned_document.pages)
 
-        if progress_callback:
-            progress_callback(0, "Starting interpretation")
-
         for i, (page, text) in enumerate(
             zip(scanned_document.pages, scanned_document.extracted_text, strict=False),
             1,
         ):
+            if progress_callback:
+                percent = int(100 * (i - 1) / total_pages)
+                progress_callback(percent, f"Examining page {i}/{total_pages}")
+
             logger.info(f"Examining page {i}/{total_pages}")
             if i == 1:
                 # Process the first page
@@ -84,10 +85,6 @@ class AIQuestionnaireInterpreter:
                 # Process subsequent pages
                 partial_questionnaire = self._process_subsequent_page(page, text, i, current_state)
                 current_state = merge_questionnaires(current_state, partial_questionnaire)
-
-            if progress_callback:
-                percent = int(100 * i / total_pages)
-                progress_callback(percent, f"Interpreted page {i}/{total_pages}")
 
         if current_state is None:
             raise ValueError("No valid questionnaire found in the document")
