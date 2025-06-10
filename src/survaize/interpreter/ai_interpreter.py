@@ -86,9 +86,6 @@ class AIQuestionnaireInterpreter:
                 partial_questionnaire = self._process_subsequent_page(page, text, i, current_state)
                 current_state = merge_questionnaires(current_state, partial_questionnaire)
 
-        if progress_callback:
-            progress_callback(100, "Complete")
-
         if current_state is None:
             raise ValueError("No valid questionnaire found in the document")
         if progress_callback:

@@ -1,4 +1,5 @@
 import { Questionnaire } from "../models/questionnaire";
+import { log, logError } from "./logger";
 
 // API service for interacting with the backend
 export class SurvaizeApiService {
@@ -15,7 +16,7 @@ export class SurvaizeApiService {
     file: File,
     onProgress?: (percent: number, message: string) => void,
   ): Promise<Questionnaire> {
-    console.log(`Reading file: ${file.name}`);
+    log(`Reading file: ${file.name}`);
 
     try {
       const formData = new FormData();
@@ -33,7 +34,7 @@ export class SurvaizeApiService {
       }
 
       const { job_id } = await response.json();
-      console.log("Got job_id:", job_id);
+      log("Got job_id:", job_id);
 
       // Small delay to ensure the background task has started
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -43,7 +44,7 @@ export class SurvaizeApiService {
         const host = window.location.host;
 
         const wsUrl = `${protocol}://${host}/api/questionnaire/read/${job_id}`;
-        console.log("Connecting to WebSocket:", wsUrl);
+        log("Connecting to WebSocket:", wsUrl);
 
         const ws = new WebSocket(wsUrl);
         let isResolved = false;
@@ -52,7 +53,7 @@ export class SurvaizeApiService {
         const timeout = setTimeout(() => {
           if (!isResolved) {
             if (ws.readyState == WebSocket.CONNECTING) {
-              console.error(
+              logError(
                 "WebSocket timeout: No response received within 30 seconds",
               );
               cleanup();
@@ -73,8 +74,8 @@ export class SurvaizeApiService {
         };
 
         ws.onopen = () => {
-          console.log("WebSocket connection opened successfully");
-          console.log("WebSocket state:", {
+          log("WebSocket connection opened successfully");
+          log("WebSocket state:", {
             readyState: ws.readyState,
             url: ws.url,
             protocol: ws.protocol,
@@ -82,18 +83,18 @@ export class SurvaizeApiService {
         };
 
         ws.onmessage = (event) => {
-          console.log("WebSocket message received:", event.data);
+          log("WebSocket message received:", event.data);
           const data = JSON.parse(event.data);
           if (data.progress !== undefined && onProgress) {
             onProgress(data.progress, data.message || "");
           }
           if (data.questionnaire) {
-            console.log("Received questionnaire data, closing WebSocket");
+            log("Received questionnaire data, closing WebSocket");
             cleanup();
             ws.close();
             resolve(data.questionnaire as Questionnaire);
           } else if (data.error) {
-            console.log("Received error, closing WebSocket:", data.error);
+            log("Received error, closing WebSocket:", data.error);
             cleanup();
             ws.close();
             reject(new Error(data.error));
@@ -101,8 +102,8 @@ export class SurvaizeApiService {
         };
 
         ws.onerror = (error) => {
-          console.error("WebSocket error:", error);
-          console.log("WebSocket state at error:", {
+          logError("WebSocket error:", error);
+          log("WebSocket state at error:", {
             readyState: ws.readyState,
             url: ws.url,
             protocol: ws.protocol,
@@ -113,7 +114,7 @@ export class SurvaizeApiService {
         };
 
         ws.onclose = (event) => {
-          console.log(
+          log(
             "WebSocket closed:",
             event.code,
             event.reason,
@@ -137,7 +138,7 @@ export class SurvaizeApiService {
         };
       });
     } catch (error) {
-      console.error("Error reading questionnaire:", error);
+      logError("Error reading questionnaire:", error);
       throw error;
     }
   }
@@ -147,7 +148,7 @@ export class SurvaizeApiService {
     questionnaire: Questionnaire,
     format: "json" | "cspro",
   ): Promise<Blob> {
-    console.log(`Saving questionnaire in ${format} format`);
+    log(`Saving questionnaire in ${format} format`);
 
     try {
       const response = await fetch(
@@ -171,11 +172,11 @@ export class SurvaizeApiService {
 
       return await response.blob();
     } catch (error) {
-      console.error(`Error saving questionnaire in ${format} format:`, error);
+      logError(`Error saving questionnaire in ${format} format:`, error);
 
       // Fallback to client-side generation for JSON
       if (format === "json") {
-        console.log("Falling back to client-side JSON generation");
+        log("Falling back to client-side JSON generation");
         const json = JSON.stringify(questionnaire, null, 2);
         return new Blob([json], { type: "application/json" });
       }
