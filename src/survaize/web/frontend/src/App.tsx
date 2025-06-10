@@ -1,4 +1,4 @@
-import { useState, useEffect, JSX } from "react";
+import { useState, useEffect } from "react";
 import {
   QuestionnaireProvider,
   OpenQuestionnaire,
@@ -6,7 +6,7 @@ import {
 } from "./components/QuestionnaireComponents";
 import { QuestionnaireDisplay } from "./components/QuestionnaireDisplay";
 
-function App(): JSX.Element {
+const App: React.FC = () => {
   const [apiStatus, setApiStatus] = useState<string>("");
   const [isApiConnected, setIsApiConnected] = useState<boolean | null>(null);
 
@@ -52,6 +52,6 @@ function App(): JSX.Element {
       </div>
     </QuestionnaireProvider>
   );
-}
+};
 
 export default App;
