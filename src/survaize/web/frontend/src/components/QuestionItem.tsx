@@ -1,4 +1,13 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleDot,
+  faSquareCheck,
+  faHashtag,
+  faFont,
+  faCalendarDays,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 import { Question, QuestionType } from "../models/questionnaire";
 
 interface QuestionItemProps {
@@ -6,10 +15,30 @@ interface QuestionItemProps {
   isIdField?: boolean;
 }
 
+const getQuestionTypeIcon = (type: QuestionType) => {
+  switch (type) {
+    case QuestionType.SINGLE_SELECT:
+      return { icon: faCircleDot, label: "Single select" };
+    case QuestionType.MULTI_SELECT:
+      return { icon: faSquareCheck, label: "Multi select" };
+    case QuestionType.NUMERIC:
+      return { icon: faHashtag, label: "Numeric" };
+    case QuestionType.TEXT:
+      return { icon: faFont, label: "Text" };
+    case QuestionType.DATE:
+      return { icon: faCalendarDays, label: "Date" };
+    case QuestionType.LOCATION:
+      return { icon: faLocationDot, label: "Location" };
+    default:
+      return { icon: faFont, label: "Unknown" };
+  }
+};
+
 const QuestionItem: React.FC<QuestionItemProps> = ({
   question,
   isIdField = false,
 }) => {
+  const { icon, label } = getQuestionTypeIcon(question.type);
   let details: React.ReactNode = null;
 
   switch (question.type) {
@@ -85,7 +114,9 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
         <span className="question-number">{question.number}</span>
         <span className="question-id">[{question.id}]</span>
         {isIdField && <span className="id-marker">id</span>}
-        <span className="question-type">{question.type}</span>
+        <span className="question-type" title={label}>
+          <FontAwesomeIcon icon={icon} />
+        </span>
       </div>
       <div className="question-text">{question.text}</div>
       {question.instructions && (
