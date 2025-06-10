@@ -176,6 +176,12 @@ button:focus-visible {
   transition: width 0.3s ease;
 }
 
+/* Loading view */
+.questionnaire-loading {
+  text-align: center;
+  padding: 2rem;
+}
+
 /* Error messages */
 .error-message {
   color: var(--error-color);

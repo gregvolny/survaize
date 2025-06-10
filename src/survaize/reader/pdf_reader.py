@@ -51,10 +51,10 @@ class PDFReader:
             progress_callback(1, f"Extracted {len(pages)} pages")
         texts: list[str] = []
         for i, page in enumerate(pages, start=1):
-            texts.append(self._process_page(page))
             if progress_callback:
-                percent = int(10 * i / len(pages))
-                progress_callback(percent, f"Processed page {i}/{len(pages)}")
+                percent = int(10 * (i  - 1) / len(pages))
+                progress_callback(percent, f"Extracting image from page {i}/{len(pages)}")
+            texts.append(self._process_page(page))
 
         scanned_questionnaire = ScannedQuestionnaire(
             pages=pages,
