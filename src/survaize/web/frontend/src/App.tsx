@@ -28,24 +28,27 @@ const App: React.FC = () => {
   return (
     <QuestionnaireProvider>
       <div className="app-container">
-        <header className="app-header">
-          <h1>Survaize</h1>
-          <div
-            className={`api-status ${isApiConnected === false ? "offline" : ""}`}
-          >
-            {isApiConnected === null ? (
+        <div className="top-bar">
+          <header className="app-header">
+            <h1>Survaize</h1>
+            <div
+              className={`api-status ${
+              isApiConnected === false ? "offline" : ""
+              }`}
+              style={{ display: isApiConnected === true ? 'none' : 'block' }}
+            >
+              {isApiConnected === null ? (
               <span className="loading">Connecting to API...</span>
-            ) : isApiConnected === false ? (
+              ) : isApiConnected === false ? (
               <span className="offline">{apiStatus}</span>
-            ) : null}
+              ) : null}
+            </div>
+          </header>
+          <div className="toolbar">
+            <OpenQuestionnaire />
+            <SaveQuestionnaire />
           </div>
-        </header>
-
-        <div className="toolbar">
-          <OpenQuestionnaire />
-          <SaveQuestionnaire />
         </div>
-
         <div className="main-content">
           <QuestionnaireDisplay />
         </div>

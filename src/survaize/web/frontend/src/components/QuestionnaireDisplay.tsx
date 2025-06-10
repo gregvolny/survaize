@@ -43,9 +43,6 @@ export const QuestionnaireDisplay: React.FC = () => {
         <div>
           <h2>{questionnaire.title}</h2>
           {questionnaire.description && <p>{questionnaire.description}</p>}
-          <div className="id-fields">
-            <strong>ID Fields:</strong> {questionnaire.id_fields.join(", ")}
-          </div>
         </div>
         <button
           className="icon-button"
@@ -83,7 +80,11 @@ export const QuestionnaireDisplay: React.FC = () => {
 
               <div className="questions-list">
                 {section.questions.map((question) => (
-                  <QuestionItem key={question.id} question={question} />
+                  <QuestionItem 
+                    key={question.id} 
+                    question={question} 
+                    isIdField={questionnaire.id_fields.includes(question.id)}
+                  />
                 ))}
               </div>
             </div>
