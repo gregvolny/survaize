@@ -1,5 +1,9 @@
 # Survaize
 
+<div align="center">
+  <img src="robot.svg" alt="Survaize Robot Logo" width="300" height="240">
+</div>
+
 Survaize is a tool that automatically converts "paper" questionnaires into interactive survey apps. It uses a combination of OCR and generative AI vision models to understand the structure of survey questionnaires in order to generate survey apps compatible with data collection platforms like [CSPro](https://www.census.gov/data/software/cspro.html).
 
 ## Features

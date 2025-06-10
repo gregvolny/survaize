@@ -32,17 +32,26 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
       );
       break;
     }
-    case QuestionType.NUMERIC:
+    case QuestionType.NUMERIC: {
+      const showRange =
+        question.min_value !== null || question.max_value !== null;
+      const minDisplay =
+        question.min_value !== null ? question.min_value : "-∞";
+      const maxDisplay = question.max_value !== null ? question.max_value : "∞";
       details = (
         <div className="question-constraints">
-          {question.min_value !== null && <div>Min: {question.min_value}</div>}
-          {question.max_value !== null && <div>Max: {question.max_value}</div>}
+          {showRange && (
+            <div>
+              Range: {minDisplay}-{maxDisplay}
+            </div>
+          )}
           {question.decimal_places !== null && (
             <div>Decimal places: {question.decimal_places}</div>
           )}
         </div>
       );
       break;
+    }
     case QuestionType.TEXT:
       details =
         question.max_length !== null ? (
