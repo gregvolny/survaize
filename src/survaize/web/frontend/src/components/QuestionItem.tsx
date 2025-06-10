@@ -6,14 +6,20 @@ interface QuestionItemProps {
   isIdField?: boolean;
 }
 
-const QuestionItem: React.FC<QuestionItemProps> = ({ question, isIdField = false }) => {
+const QuestionItem: React.FC<QuestionItemProps> = ({
+  question,
+  isIdField = false,
+}) => {
   let details: React.ReactNode = null;
 
   switch (question.type) {
     case QuestionType.SINGLE_SELECT:
-    case QuestionType.MULTI_SELECT:
+    case QuestionType.MULTI_SELECT: {
+      const hasManyOptions = question.options.length > 8;
       details = (
-        <div className="question-options">
+        <div
+          className={`question-options${hasManyOptions ? " many-options" : ""}`}
+        >
           <span className="option-label">Options:</span>
           <ul>
             {question.options.map((option) => (
@@ -25,6 +31,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({ question, isIdField = false
         </div>
       );
       break;
+    }
     case QuestionType.NUMERIC:
       details = (
         <div className="question-constraints">

@@ -319,6 +319,11 @@ button:focus-visible {
   margin-top: 0.75rem;
 }
 
+.question-options.many-options ul {
+  columns: 2;
+  column-gap: 1rem;
+}
+
 .option-label {
   font-weight: 500;
   display: block;
