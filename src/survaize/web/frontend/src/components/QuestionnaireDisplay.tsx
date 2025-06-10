@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { json as jsonMode } from "@codemirror/lang-json";
+import {
+  json as jsonMode,
+  jsonParseLinter,
+  jsonLanguage,
+} from "@codemirror/lang-json";
+import { linter } from "@codemirror/lint";
+import { hoverTooltip } from "@codemirror/view";
+import {
+  jsonSchemaLinter,
+  jsonSchemaHover,
+  jsonCompletion,
+} from "codemirror-json-schema";
+import questionnaireSchema from "../models/questionnaire.schema.json";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useQuestionnaire } from "./QuestionnaireComponents";
 import RobotReadingAnimation from "./RobotReadingAnimation";
@@ -85,7 +97,15 @@ export const QuestionnaireDisplay: React.FC = () => {
           <CodeMirror
             value={editorValue}
             height="500px"
-            extensions={[jsonMode()]}
+            extensions={[
+              jsonMode(),
+              linter(jsonParseLinter()),
+              linter(jsonSchemaLinter(questionnaireSchema)),
+              jsonLanguage.data.of({
+                autocomplete: jsonCompletion(questionnaireSchema),
+              }),
+              hoverTooltip(jsonSchemaHover(questionnaireSchema)),
+            ]}
             theme={oneDark}
             onChange={handleChange}
           />

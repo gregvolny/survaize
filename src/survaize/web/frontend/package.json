@@ -16,12 +16,13 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/theme-one-dark": "^6.1.2",
     "@uiw/react-codemirror": "^4.23.12",
+    "codemirror-json-schema": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
