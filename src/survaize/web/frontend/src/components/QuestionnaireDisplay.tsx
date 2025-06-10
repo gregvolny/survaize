@@ -80,9 +80,9 @@ export const QuestionnaireDisplay: React.FC = () => {
 
               <div className="questions-list">
                 {section.questions.map((question) => (
-                  <QuestionItem 
-                    key={question.id} 
-                    question={question} 
+                  <QuestionItem
+                    key={question.id}
+                    question={question}
                     isIdField={questionnaire.id_fields.includes(question.id)}
                   />
                 ))}
