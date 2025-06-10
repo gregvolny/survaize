@@ -32,7 +32,21 @@ OPENAI_API_DEPLOYMENT="my-gpt-4.1-deployment"
 Alternatively, you can pass those variables as command line arguments to survaize (run `survaize --help` for details).
 
 ## Running
-To convert a PDF questionnaire to CSPro run:
+
+## Interactive Mode
+To run Survaize in interactive mode, execute the `ui` command:
+
+```shell
+survaize ui
+```
+
+This will start a local web server and open the Survaize UI in your default web browser. You can then upload a questionnaire,
+and Survaize will read it, analyze its structure, and display the results in the browser. From there you can then export the questionnaire to
+CSPro or other formats.
+
+## Non-Interactive Mode
+To convert a PDF questionnaire to CSPro using the command line interface (non-interactive mode), you can use the `convert` 
+command. The basic syntax is:
 
 ```shell
 survaize convert input_file output_file --format cspro
@@ -69,4 +83,5 @@ MIT
 ## TODO
 - Correctly handle location question type (produce two fields in CSPro)
 - Fills in CAPI question text
-- Evals
+- Evals (in progress)
+- Questionnaire edits in the UI
