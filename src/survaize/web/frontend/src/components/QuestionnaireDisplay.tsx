@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuestionnaire } from './QuestionnaireComponents';
 import { Question, QuestionType } from '../models/questionnaire';
 import RobotReadingAnimation from './RobotReadingAnimation';
@@ -85,6 +85,11 @@ const renderQuestion = (question: Question) => {
 };
 
 export const QuestionnaireDisplay: React.FC = () => {
+  const [showRaw, setShowRaw] = useState<boolean>(false);
+
+  const toggleView = (): void => {
+    setShowRaw(prev => !prev);
+  };
   const { questionnaire, isLoading, loadProgress, loadMessage } = useQuestionnaire();
 
   if (isLoading) {
@@ -115,37 +120,52 @@ export const QuestionnaireDisplay: React.FC = () => {
   return (
     <div className="questionnaire-display">
       <div className="questionnaire-header">
-        <h2>{questionnaire.title}</h2>
-        {questionnaire.description && <p>{questionnaire.description}</p>}
-        <div className="id-fields">
-          <strong>ID Fields:</strong> {questionnaire.id_fields.join(', ')}
-        </div>
-      </div>
-      
-      <div className="sections-container">
-        {questionnaire.sections.map(section => (
-          <div key={section.id} className="section">
-            <div className="section-header">
-              <h3>{section.number}: {section.title}</h3>
-              {section.description && <p>{section.description}</p>}
-              {section.universe && (
-                <div className="section-universe">
-                  <strong>Universe:</strong> {section.universe}
-                </div>
-              )}
-              {section.occurrences > 1 && (
-                <div className="section-occurrences">
-                  <strong>Repeats:</strong> up to {section.occurrences} times
-                </div>
-              )}
-            </div>
-            
-            <div className="questions-list">
-              {section.questions.map(question => renderQuestion(question))}
-            </div>
+        <div>
+          <h2>{questionnaire.title}</h2>
+          {questionnaire.description && <p>{questionnaire.description}</p>}
+          <div className="id-fields">
+            <strong>ID Fields:</strong> {questionnaire.id_fields.join(', ')}
           </div>
-        ))}
+        </div>
+        <button
+          className="icon-button"
+          onClick={toggleView}
+          title={showRaw ? 'Show formatted view' : 'Show raw JSON'}
+        >
+          {'{}'}
+        </button>
       </div>
+
+      {showRaw ? (
+        <pre className="json-display">
+          {JSON.stringify(questionnaire, null, 2)}
+        </pre>
+      ) : (
+        <div className="sections-container">
+          {questionnaire.sections.map(section => (
+            <div key={section.id} className="section">
+              <div className="section-header">
+                <h3>{section.number}: {section.title}</h3>
+                {section.description && <p>{section.description}</p>}
+                {section.universe && (
+                  <div className="section-universe">
+                    <strong>Universe:</strong> {section.universe}
+                  </div>
+                )}
+                {section.occurrences > 1 && (
+                  <div className="section-occurrences">
+                    <strong>Repeats:</strong> up to {section.occurrences} times
+                  </div>
+                )}
+              </div>
+
+              <div className="questions-list">
+                {section.questions.map(question => renderQuestion(question))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
