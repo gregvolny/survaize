@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "@uiw/react-codemirror/dist/codemirror.css";
 
 const rootElement = document.getElementById("root");
 

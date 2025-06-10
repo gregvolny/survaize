@@ -1,16 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { json as jsonMode } from "@codemirror/lang-json";
+import { oneDark } from "@codemirror/theme-one-dark";
 import { useQuestionnaire } from "./QuestionnaireComponents";
 import RobotReadingAnimation from "./RobotReadingAnimation";
 import QuestionItem from "./QuestionItem";
 
 export const QuestionnaireDisplay: React.FC = () => {
   const [showRaw, setShowRaw] = useState<boolean>(false);
+  const [editorValue, setEditorValue] = useState<string>("");
+  const [parseError, setParseError] = useState<string | null>(null);
 
   const toggleView = (): void => {
     setShowRaw((prev) => !prev);
   };
-  const { questionnaire, isLoading, loadProgress, loadMessage } =
-    useQuestionnaire();
+  const {
+    questionnaire,
+    isLoading,
+    loadProgress,
+    loadMessage,
+    setQuestionnaire,
+  } = useQuestionnaire();
+
+  useEffect(() => {
+    if (questionnaire) {
+      setEditorValue(JSON.stringify(questionnaire, null, 2));
+      setParseError(null);
+    }
+  }, [questionnaire]);
 
   if (isLoading) {
     return (
@@ -36,6 +53,16 @@ export const QuestionnaireDisplay: React.FC = () => {
       </div>
     );
   }
+  const handleChange = (value: string): void => {
+    setEditorValue(value);
+    try {
+      const parsed = JSON.parse(value);
+      setQuestionnaire(parsed);
+      setParseError(null);
+    } catch {
+      setParseError("Invalid JSON");
+    }
+  };
 
   return (
     <div className="questionnaire-display">
@@ -54,9 +81,16 @@ export const QuestionnaireDisplay: React.FC = () => {
       </div>
 
       {showRaw ? (
-        <pre className="json-display">
-          {JSON.stringify(questionnaire, null, 2)}
-        </pre>
+        <div className="json-display">
+          <CodeMirror
+            value={editorValue}
+            height="500px"
+            extensions={[jsonMode()]}
+            theme={oneDark}
+            onChange={handleChange}
+          />
+          {parseError && <div className="error-message">{parseError}</div>}
+        </div>
       ) : (
         <div className="sections-container">
           {questionnaire.sections.map((section) => (
