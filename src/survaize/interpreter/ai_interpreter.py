@@ -147,6 +147,7 @@ class AIQuestionnaireInterpreter:
 
         # Initialize conversation
         prompt = self._create_vision_prompt(page_number)
+        questionnaire_json = questionnaire_so_far.model_dump_json(indent=2, exclude_none=True)
         message: Iterable[ChatCompletionContentPartParam] = [
             {"type": "text", "text": prompt},
             {
@@ -156,7 +157,7 @@ class AIQuestionnaireInterpreter:
             {"type": "text", "text": f"OCR Text:\n{ocr_text}"},
             {
                 "type": "text",
-                "text": f"Questionnaire from previous pages:\n{questionnaire_so_far.model_dump_json(indent=2, exclude_none=True)}",
+                "text": f"Questionnaire from previous pages:\n{questionnaire_json}",
             },
         ]
         return self._get_structured_llm_response(message, PartialQuestionnaire)
