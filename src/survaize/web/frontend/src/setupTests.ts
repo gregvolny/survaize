@@ -5,4 +5,5 @@ vi.mock("codemirror-json-schema", () => ({
   jsonSchemaLinter: () => () => null,
   jsonSchemaHover: () => () => null,
   jsonCompletion: () => null,
+  jsonSchema: () => [], // Return empty array which is a valid extension
 }));

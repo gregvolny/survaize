@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
-import CodeMirror, { drawSelection, gutter, highlightActiveLineGutter, lineNumbers } from "@uiw/react-codemirror";
-import {
-  json as jsonMode,
-} from "@codemirror/lang-json";
-import {
-  jsonSchema
-} from "codemirror-json-schema";
+import CodeMirror, {
+  drawSelection,
+  gutter,
+  highlightActiveLineGutter,
+  lineNumbers,
+} from "@uiw/react-codemirror";
+import { json as jsonMode } from "@codemirror/lang-json";
+import { jsonSchema } from "codemirror-json-schema";
 import questionnaireCompletionSchema from "../models/questionnaire.schema.json";
 
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useQuestionnaire } from "./QuestionnaireComponents";
 import RobotReadingAnimation from "./RobotReadingAnimation";
 import QuestionItem from "./QuestionItem";
-import { bracketMatching, foldGutter, indentOnInput } from "@codemirror/language";
+import {
+  bracketMatching,
+  foldGutter,
+  indentOnInput,
+} from "@codemirror/language";
 import { lintGutter } from "@codemirror/lint";
 import {
   autocompletion,
@@ -20,14 +25,12 @@ import {
   completionKeymap,
   startCompletion,
 } from "@codemirror/autocomplete";
-import { keymap } from "@codemirror/view";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
 
 export const QuestionnaireDisplay: React.FC = () => {
   const [showRaw, setShowRaw] = useState<boolean>(false);
   const [editorValue, setEditorValue] = useState<string>("");
   const [parseError, setParseError] = useState<string | null>(null);
-  const [editorView, setEditorView] = useState<EditorView | null>(null);
 
   const toggleView = (): void => {
     setShowRaw((prev) => !prev);
@@ -48,8 +51,8 @@ export const QuestionnaireDisplay: React.FC = () => {
   }, [questionnaire]);
 
   // Custom completion trigger for keyboard shortcuts
-  const triggerCompletionSync = (view: any) => {
-    return startCompletion(view);
+  const triggerCompletionSync = (target: EditorView) => {
+    return startCompletion(target);
   };
 
   if (isLoading) {
@@ -107,9 +110,6 @@ export const QuestionnaireDisplay: React.FC = () => {
           <CodeMirror
             value={editorValue}
             height="500px"
-            onCreateEditor={(view) => {
-              setEditorView(view);
-            }}
             extensions={[
               gutter({ class: "CodeMirror-lint-markers" }),
               bracketMatching(),
@@ -131,7 +131,11 @@ export const QuestionnaireDisplay: React.FC = () => {
                 ...completionKeymap,
                 { key: "Ctrl-Space", run: triggerCompletionSync },
                 { key: "Alt-Space", run: triggerCompletionSync },
-                { key: "Cmd-Space", preventDefault: true, run: triggerCompletionSync }, // Try Cmd+Space too
+                {
+                  key: "Cmd-Space",
+                  preventDefault: true,
+                  run: triggerCompletionSync,
+                }, // Try Cmd+Space too
               ]),
             ]}
             theme={oneDark}
