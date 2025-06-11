@@ -156,7 +156,7 @@ class AIQuestionnaireInterpreter:
             {"type": "text", "text": f"OCR Text:\n{ocr_text}"},
             {
                 "type": "text",
-                "text": f"Questionnaire from previous pages:\n{questionnaire_so_far.model_dump_json(indent=2)}",
+                "text": f"Questionnaire from previous pages:\n{questionnaire_so_far.model_dump_json(indent=2, exclude_none=True)}",
             },
         ]
         return self._get_structured_llm_response(message, PartialQuestionnaire)

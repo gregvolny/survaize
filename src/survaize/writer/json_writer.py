@@ -21,4 +21,4 @@ class JSONWriter:
         logger.info(f"Writing output to: {output_path}")
 
         with open(output_path, "w") as f:
-            json.dump(questionnaire.model_dump(mode="json"), f, indent=2)
+            f.write(questionnaire.model_dump_json(indent=2, exclude_none=True))

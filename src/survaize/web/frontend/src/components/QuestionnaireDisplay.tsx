@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { drawSelection, gutter, highlightActiveLineGutter, lineNumbers } from "@uiw/react-codemirror";
 import {
   json as jsonMode,
-  jsonParseLinter,
-  jsonLanguage,
 } from "@codemirror/lang-json";
-import { linter } from "@codemirror/lint";
-import { hoverTooltip } from "@codemirror/view";
 import {
-  jsonSchemaLinter,
-  jsonSchemaHover,
-  jsonCompletion,
+  jsonSchema
 } from "codemirror-json-schema";
-import questionnaireSchema from "../models/questionnaire.schema.json";
+import questionnaireCompletionSchema from "../models/questionnaire.schema.json";
+
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useQuestionnaire } from "./QuestionnaireComponents";
 import RobotReadingAnimation from "./RobotReadingAnimation";
 import QuestionItem from "./QuestionItem";
+import { bracketMatching, foldGutter, indentOnInput } from "@codemirror/language";
+import { lintGutter } from "@codemirror/lint";
+import {
+  autocompletion,
+  closeBrackets,
+  completionKeymap,
+  startCompletion,
+} from "@codemirror/autocomplete";
+import { keymap } from "@codemirror/view";
+import { EditorView } from "@codemirror/view";
 
 export const QuestionnaireDisplay: React.FC = () => {
   const [showRaw, setShowRaw] = useState<boolean>(false);
   const [editorValue, setEditorValue] = useState<string>("");
   const [parseError, setParseError] = useState<string | null>(null);
+  const [editorView, setEditorView] = useState<EditorView | null>(null);
 
   const toggleView = (): void => {
     setShowRaw((prev) => !prev);
@@ -40,6 +46,11 @@ export const QuestionnaireDisplay: React.FC = () => {
       setParseError(null);
     }
   }, [questionnaire]);
+
+  // Custom completion trigger for keyboard shortcuts
+  const triggerCompletionSync = (view: any) => {
+    return startCompletion(view);
+  };
 
   if (isLoading) {
     return (
@@ -66,7 +77,6 @@ export const QuestionnaireDisplay: React.FC = () => {
     );
   }
   const handleChange = (value: string): void => {
-    setEditorValue(value);
     try {
       const parsed = JSON.parse(value);
       setQuestionnaire(parsed);
@@ -97,14 +107,32 @@ export const QuestionnaireDisplay: React.FC = () => {
           <CodeMirror
             value={editorValue}
             height="500px"
+            onCreateEditor={(view) => {
+              setEditorView(view);
+            }}
             extensions={[
+              gutter({ class: "CodeMirror-lint-markers" }),
+              bracketMatching(),
+              highlightActiveLineGutter(),
+              closeBrackets(),
+              lineNumbers(),
+              lintGutter(),
+              indentOnInput(),
+              drawSelection(),
+              foldGutter(),
               jsonMode(),
-              linter(jsonParseLinter()),
-              linter(jsonSchemaLinter(questionnaireSchema)),
-              jsonLanguage.data.of({
-                autocomplete: jsonCompletion(questionnaireSchema),
+              autocompletion({
+                activateOnTyping: true,
+                maxRenderedOptions: 20,
+                defaultKeymap: true,
               }),
-              hoverTooltip(jsonSchemaHover(questionnaireSchema)),
+              jsonSchema(questionnaireCompletionSchema),
+              keymap.of([
+                ...completionKeymap,
+                { key: "Ctrl-Space", run: triggerCompletionSync },
+                { key: "Alt-Space", run: triggerCompletionSync },
+                { key: "Cmd-Space", preventDefault: true, run: triggerCompletionSync }, // Try Cmd+Space too
+              ]),
             ]}
             theme={oneDark}
             onChange={handleChange}
