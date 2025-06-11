@@ -1,7 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { test, expect } from "vitest";
 import QuestionItem from "../components/QuestionItem";
-import { QuestionType, NumericQuestion, SingleChoiceQuestion, MultipleChoiceQuestion, TextQuestion, DateQuestion, LocationQuestion } from "../models/questionnaire";
+import {
+  QuestionType,
+  NumericQuestion,
+  SingleChoiceQuestion,
+  MultipleChoiceQuestion,
+  TextQuestion,
+  DateQuestion,
+  LocationQuestion,
+} from "../models/questionnaire";
 
 test("renders range for numeric question", () => {
   const question: NumericQuestion = {

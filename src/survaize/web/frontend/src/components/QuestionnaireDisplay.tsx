@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, {
+  drawSelection,
+  gutter,
+  highlightActiveLineGutter,
+  lineNumbers,
+} from "@uiw/react-codemirror";
 import { json as jsonMode } from "@codemirror/lang-json";
+import { jsonSchema } from "codemirror-json-schema";
+import questionnaireCompletionSchema from "../models/questionnaire.schema.json";
+
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useQuestionnaire } from "./QuestionnaireComponents";
 import RobotReadingAnimation from "./RobotReadingAnimation";
 import QuestionItem from "./QuestionItem";
+import {
+  bracketMatching,
+  foldGutter,
+  indentOnInput,
+} from "@codemirror/language";
+import { lintGutter } from "@codemirror/lint";
+import {
+  autocompletion,
+  closeBrackets,
+  completionKeymap,
+  startCompletion,
+} from "@codemirror/autocomplete";
+import { EditorView, keymap } from "@codemirror/view";
 
 export const QuestionnaireDisplay: React.FC = () => {
   const [showRaw, setShowRaw] = useState<boolean>(false);
@@ -28,6 +49,11 @@ export const QuestionnaireDisplay: React.FC = () => {
       setParseError(null);
     }
   }, [questionnaire]);
+
+  // Custom completion trigger for keyboard shortcuts
+  const triggerCompletionSync = (target: EditorView) => {
+    return startCompletion(target);
+  };
 
   if (isLoading) {
     return (
@@ -54,7 +80,6 @@ export const QuestionnaireDisplay: React.FC = () => {
     );
   }
   const handleChange = (value: string): void => {
-    setEditorValue(value);
     try {
       const parsed = JSON.parse(value);
       setQuestionnaire(parsed);
@@ -85,7 +110,34 @@ export const QuestionnaireDisplay: React.FC = () => {
           <CodeMirror
             value={editorValue}
             height="500px"
-            extensions={[jsonMode()]}
+            extensions={[
+              gutter({ class: "CodeMirror-lint-markers" }),
+              bracketMatching(),
+              highlightActiveLineGutter(),
+              closeBrackets(),
+              lineNumbers(),
+              lintGutter(),
+              indentOnInput(),
+              drawSelection(),
+              foldGutter(),
+              jsonMode(),
+              autocompletion({
+                activateOnTyping: true,
+                maxRenderedOptions: 20,
+                defaultKeymap: true,
+              }),
+              jsonSchema(questionnaireCompletionSchema),
+              keymap.of([
+                ...completionKeymap,
+                { key: "Ctrl-Space", run: triggerCompletionSync },
+                { key: "Alt-Space", run: triggerCompletionSync },
+                {
+                  key: "Cmd-Space",
+                  preventDefault: true,
+                  run: triggerCompletionSync,
+                }, // Try Cmd+Space too
+              ]),
+            ]}
             theme={oneDark}
             onChange={handleChange}
           />

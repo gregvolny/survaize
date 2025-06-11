@@ -104,7 +104,7 @@ async def read_questionnaire(
                 queue.put_nowait(
                     {
                         "progress": 100,
-                        "questionnaire": questionnaire.model_dump(),
+                        "questionnaire": questionnaire.model_dump(exclude_none=True),
                     }
                 )
             except Exception as exc:  # noqa: BLE001

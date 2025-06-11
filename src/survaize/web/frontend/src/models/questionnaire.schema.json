@@ -1,0 +1,462 @@
+{
+  "title": "Questionnaire",
+  "description": "Top-level questionnaire structure.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "description": "Title of the questionnaire",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "description": "Description of the questionnaire",
+      "type": "string"
+    },
+    "id_fields": {
+      "title": "Id Fields",
+      "description": "List of field ids used to uniquely identify the unit of observation (household, individual, etc.)",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sections": {
+      "title": "Sections",
+      "description": "Sections in the questionnaire",
+      "type": "array",
+      "items": {
+        "title": "Section",
+        "description": "Represents a section in the questionnaire containing related questions.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "description": "Unique identifier for the section",
+            "type": "string"
+          },
+          "number": {
+            "title": "Number",
+            "description": "The section number e.g. A, B, I, II, etc.",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "description": "Title of the section",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "description": "Description of the section",
+            "type": "string"
+          },
+          "universe": {
+            "title": "Universe",
+            "description": "Universe of respondents the section applies to e.g. residents over 10 years old",
+            "type": "string"
+          },
+          "questions": {
+            "title": "Questions",
+            "description": "Questions in this section",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "title": "NumericQuestion",
+                  "description": "Numeric question type with its specific constraints.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "numeric"
+                      ],
+                      "type": "string"
+                    },
+                    "min_value": {
+                      "title": "Min Value",
+                      "description": "Minimum allowed value",
+                      "type": "number"
+                    },
+                    "max_value": {
+                      "title": "Max Value",
+                      "description": "Maximum allowed value",
+                      "type": "number"
+                    },
+                    "decimal_places": {
+                      "title": "Decimal Places",
+                      "description": "Number of decimal places allowed",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type"
+                  ]
+                },
+                {
+                  "title": "TextQuestion",
+                  "description": "Text question type with its specific constraints.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "text"
+                      ],
+                      "type": "string"
+                    },
+                    "max_length": {
+                      "title": "Max Length",
+                      "description": "Maximum length of text input",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type"
+                  ]
+                },
+                {
+                  "title": "SingleChoiceQuestion",
+                  "description": "Single select question type with its options.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "single_select"
+                      ],
+                      "type": "string"
+                    },
+                    "options": {
+                      "title": "Options",
+                      "description": "List of available options",
+                      "type": "array",
+                      "items": {
+                        "title": "Option",
+                        "description": "Represents an option in a single or multiple select question.",
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "title": "Code",
+                            "description": "Unique code for the option",
+                            "type": "string"
+                          },
+                          "label": {
+                            "title": "Label",
+                            "description": "Display label for the option",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "label"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type",
+                    "options"
+                  ]
+                },
+                {
+                  "title": "MultipleChoiceQuestion",
+                  "description": "Multiple select question type with its options.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "multi_select"
+                      ],
+                      "type": "string"
+                    },
+                    "options": {
+                      "title": "Options",
+                      "description": "List of available options",
+                      "type": "array",
+                      "items": {
+                        "title": "Option",
+                        "description": "Represents an option in a single or multiple select question.",
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "title": "Code",
+                            "description": "Unique code for the option",
+                            "type": "string"
+                          },
+                          "label": {
+                            "title": "Label",
+                            "description": "Display label for the option",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "label"
+                        ]
+                      }
+                    },
+                    "min_selections": {
+                      "title": "Min Selections",
+                      "description": "Minimum number of selections required",
+                      "type": "integer"
+                    },
+                    "max_selections": {
+                      "title": "Max Selections",
+                      "description": "Maximum number of selections allowed",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type",
+                    "options"
+                  ]
+                },
+                {
+                  "title": "DateQuestion",
+                  "description": "Date question type with its specific constraints.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "date"
+                      ],
+                      "type": "string"
+                    },
+                    "min_date": {
+                      "title": "Min Date",
+                      "description": "Minimum allowed date (YYYY-MM-DD)",
+                      "type": "string"
+                    },
+                    "max_date": {
+                      "title": "Max Date",
+                      "description": "Maximum allowed date (YYYY-MM-DD)",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type"
+                  ]
+                },
+                {
+                  "title": "LocationQuestion",
+                  "description": "Location question type representing a geographical coordinate.",
+                  "type": "object",
+                  "properties": {
+                    "number": {
+                      "title": "Number",
+                      "description": "The question number e.g. A1, A2, B1, B2, etc.",
+                      "type": "string"
+                    },
+                    "id": {
+                      "title": "Id",
+                      "description": "Unique identifier for the question e.g. NAME, AGE, etc.",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "description": "The question text read to the respondent",
+                      "type": "string"
+                    },
+                    "instructions": {
+                      "title": "Instructions",
+                      "description": "Additional instructions for the interviewer",
+                      "type": "string"
+                    },
+                    "universe": {
+                      "title": "Universe",
+                      "description": "Universe of respondents the question applies to e.g. residents over 10 years old",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "enum": [
+                        "location"
+                      ],
+                      "type": "string"
+                    },
+                    "latitude": {
+                      "title": "Latitude",
+                      "description": "The latitude coordinate (-90 to 90 degrees)",
+                      "type": "number"
+                    },
+                    "longitude": {
+                      "title": "Longitude",
+                      "description": "The longitude coordinate (-180 to 180 degrees)",
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "number",
+                    "id",
+                    "text",
+                    "type"
+                  ]
+                }
+              ]
+            }
+          },
+          "occurrences": {
+            "title": "Occurrences",
+            "description": "Maximum number of times the section is asked",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title",
+          "questions",
+          "occurrences"
+        ]
+      }
+    }
+  },
+  "required": [
+    "title",
+    "id_fields",
+    "sections"
+  ]
+}
