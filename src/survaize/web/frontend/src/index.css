@@ -65,9 +65,15 @@ body {
 
 .toolbar {
   display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.toolbar-left {
+  flex: 1;
+  display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 1rem;
 }
 
 .main-content {
@@ -145,6 +151,11 @@ button {
 
 .icon-button:hover {
   color: var(--primary-color);
+}
+
+/* Position the JSON toggle at the far right of the toolbar */
+.toolbar > .icon-button {
+  margin-left: auto;
 }
 
 button:disabled {

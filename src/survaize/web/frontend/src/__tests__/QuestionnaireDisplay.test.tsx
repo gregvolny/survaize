@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { vi } from "vitest";
 import { QuestionnaireDisplay } from "../components/QuestionnaireDisplay";
 import { QuestionnaireContext } from "../components/QuestionnaireComponents";
@@ -22,13 +22,14 @@ const contextValue: React.ContextType<typeof QuestionnaireContext> = {
   setLoadMessage: vi.fn(),
 };
 
-test("shows editor when toggled", () => {
+test("shows editor when showRaw is true", () => {
   render(
     <QuestionnaireContext.Provider value={contextValue}>
-      <QuestionnaireDisplay />
+      <QuestionnaireDisplay showRaw={true} />
     </QuestionnaireContext.Provider>,
   );
-  const toggle = screen.getByTitle(/Show raw JSON/i);
-  fireEvent.click(toggle);
   expect(document.querySelector(".cm-editor")).toBeInTheDocument();
+  expect(
+    document.querySelector(".questionnaire-header"),
+  ).not.toBeInTheDocument();
 });
