@@ -372,14 +372,15 @@ class AIQuestionnaireInterpreter:
                   tables with multiple rows in which case count the rows, otherwise estimate based on the 
                   topic/questions in the section e.g. if the section is about household members, it may be repeated 
                   for each member of the household)
+                  **Always include this field with an integer value, even if it must be estimated.**
             4. In each section identify the individual questions and extract the following information:
                 - Question number
                 - Question ID (derived from the question, lowercase with underscores)
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location)
-                - Single_select and multi_select questions will have a list of responses, for those questions extract 
-                  the code and label for each response
+                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**
+                - Single_select and multi_select questions will have a list of responses; for those questions
+                  extract the code and label for each response. **Every option needs a code; use numbers if missing.**
                 - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
                   examine the image of the question, determine the number of digits allowed for the response represented
                   as boxes next to or under the question. For example, if the question has 2 boxes next to it, the 
@@ -395,6 +396,8 @@ class AIQuestionnaireInterpreter:
                questionnaire. They are usually at the start of the questionnaire and combined will uniquely identify
                the questionnaire. They are often geographic identifiers, household identifiers, or respondent
                identifiers or codes from the sample.
+            6. Ensure every object includes all required properties as shown in the schema example. Provide a best
+               guess or placeholder when the value is not explicit rather than omitting the field.
 
             Here is an example of the output you should produce:
             ```json
@@ -424,6 +427,7 @@ class AIQuestionnaireInterpreter:
                   tables with multiple rows in which case count the rows, otherwise estimate based on the
                   topic/questions in the section e.g. if the section is about household members, it may be repeated
                   for each member of the household)
+                  **Always include this field with an integer value, even if it must be estimated.**
             2. For questions that belong to a section from a previous page, include that section with its ID but only
                the new questions.
             3. Identify the individual questions and extract the following information:
@@ -431,9 +435,9 @@ class AIQuestionnaireInterpreter:
                 - Question ID (derived from the question, lowercase with underscores)
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location)
-                - Single_select and multi_select questions will have a list of responses, for those questions extract
-                  the code and label for each response
+                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**
+                - Single_select and multi_select questions will have a list of responses; for those questions
+                  extract the code and label for each response. **Every option needs a code; use numbers if missing.**
                 - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
                   examine the image of the question, determine the number of digits allowed for the response represented
                   as boxes next to or under the question. For example, if the question has 2 boxes next to it, the 
@@ -445,6 +449,8 @@ class AIQuestionnaireInterpreter:
                 - Text questions will have a maximum length which can be inferred based on the number of boxes next to
                   or under the question, if there is no information to infer the maximum length, omit the field from the
                   output
+            4. Ensure every object includes all required properties as shown in the schema example. Provide a best
+               guess or placeholder when the value is not explicit rather than omitting the field.
 
             Here is an example of the output you should produce:
             ```json
