@@ -29,4 +29,7 @@ test("shows editor when showRaw is true", () => {
     </QuestionnaireContext.Provider>,
   );
   expect(document.querySelector(".cm-editor")).toBeInTheDocument();
+  expect(
+    document.querySelector(".questionnaire-header"),
+  ).not.toBeInTheDocument();
 });

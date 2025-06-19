@@ -93,12 +93,14 @@ export const QuestionnaireDisplay: React.FC<QuestionnaireDisplayProps> = ({
 
   return (
     <div className="questionnaire-display">
-      <div className="questionnaire-header">
-        <div>
-          <h2>{questionnaire.title}</h2>
-          {questionnaire.description && <p>{questionnaire.description}</p>}
+      {!showRaw && (
+        <div className="questionnaire-header">
+          <div>
+            <h2>{questionnaire.title}</h2>
+            {questionnaire.description && <p>{questionnaire.description}</p>}
+          </div>
         </div>
-      </div>
+      )}
 
       {showRaw ? (
         <div className="json-display">
