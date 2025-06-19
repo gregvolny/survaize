@@ -50,8 +50,10 @@ const App: React.FC = () => {
             </div>
           </header>
           <div className="toolbar">
-            <OpenQuestionnaire />
-            <SaveQuestionnaire />
+            <div className="toolbar-left">
+              <OpenQuestionnaire />
+              <SaveQuestionnaire />
+            </div>
             <button
               className="icon-button"
               onClick={toggleShowRaw}

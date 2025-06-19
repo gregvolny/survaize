@@ -65,9 +65,14 @@ body {
 
 .toolbar {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 1rem;
 }
 
 .main-content {
