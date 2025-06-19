@@ -9,6 +9,11 @@ import { QuestionnaireDisplay } from "./components/QuestionnaireDisplay";
 const App: React.FC = () => {
   const [apiStatus, setApiStatus] = useState<string>("");
   const [isApiConnected, setIsApiConnected] = useState<boolean | null>(null);
+  const [showRaw, setShowRaw] = useState<boolean>(false);
+
+  const toggleShowRaw = (): void => {
+    setShowRaw((prev) => !prev);
+  };
 
   useEffect(() => {
     // Check API health
@@ -47,10 +52,17 @@ const App: React.FC = () => {
           <div className="toolbar">
             <OpenQuestionnaire />
             <SaveQuestionnaire />
+            <button
+              className="icon-button"
+              onClick={toggleShowRaw}
+              title={showRaw ? "Show formatted view" : "Show raw JSON"}
+            >
+              {"{}"}
+            </button>
           </div>
         </div>
         <div className="main-content">
-          <QuestionnaireDisplay />
+          <QuestionnaireDisplay showRaw={showRaw} />
         </div>
       </div>
     </QuestionnaireProvider>

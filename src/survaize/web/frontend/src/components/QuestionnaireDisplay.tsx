@@ -27,14 +27,16 @@ import {
 } from "@codemirror/autocomplete";
 import { EditorView, keymap } from "@codemirror/view";
 
-export const QuestionnaireDisplay: React.FC = () => {
-  const [showRaw, setShowRaw] = useState<boolean>(false);
+interface QuestionnaireDisplayProps {
+  showRaw: boolean;
+}
+
+export const QuestionnaireDisplay: React.FC<QuestionnaireDisplayProps> = ({
+  showRaw,
+}) => {
   const [editorValue, setEditorValue] = useState<string>("");
   const [parseError, setParseError] = useState<string | null>(null);
 
-  const toggleView = (): void => {
-    setShowRaw((prev) => !prev);
-  };
   const {
     questionnaire,
     isLoading,
@@ -96,13 +98,6 @@ export const QuestionnaireDisplay: React.FC = () => {
           <h2>{questionnaire.title}</h2>
           {questionnaire.description && <p>{questionnaire.description}</p>}
         </div>
-        <button
-          className="icon-button"
-          onClick={toggleView}
-          title={showRaw ? "Show formatted view" : "Show raw JSON"}
-        >
-          {"{}"}
-        </button>
       </div>
 
       {showRaw ? (
