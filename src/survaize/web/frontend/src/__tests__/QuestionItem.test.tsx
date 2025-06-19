@@ -54,6 +54,18 @@ test("hides range line when both bounds missing", () => {
   expect(range).toBeNull();
 });
 
+test("hides range and decimals when properties omitted", () => {
+  const question: NumericQuestion = {
+    number: "9",
+    id: "omit",
+    text: "Any number?",
+    type: QuestionType.NUMERIC,
+  };
+  render(<QuestionItem question={question} />);
+  expect(screen.queryByText(/Range:/i)).toBeNull();
+  expect(screen.queryByText(/Decimal places:/i)).toBeNull();
+});
+
 test("renders correct tooltip for numeric question", () => {
   const question: NumericQuestion = {
     number: "1",
@@ -112,6 +124,17 @@ test("renders correct icon and tooltip for text question", () => {
   render(<QuestionItem question={question} />);
   const iconElement = screen.getByRole("img", { hidden: true });
   expect(iconElement.parentElement).toHaveAttribute("title", "Text");
+});
+
+test("hides max length when property omitted", () => {
+  const question: TextQuestion = {
+    number: "10",
+    id: "desc",
+    text: "Describe yourself",
+    type: QuestionType.TEXT,
+  };
+  render(<QuestionItem question={question} />);
+  expect(screen.queryByText(/Max length:/i)).toBeNull();
 });
 
 test("renders correct icon and tooltip for date question", () => {
