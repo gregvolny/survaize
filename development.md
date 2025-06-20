@@ -73,6 +73,13 @@ source .venv/bin/activate
 
 See [uv docs](https://docs.astral.sh/uv/) for details.
 
+### Recording OpenAI Responses
+
+You can record or replay API calls made to the OpenAI client. Set
+`OPENAI_RECORDING_MODE` to `record` to save responses, or `replay` to load
+previously recorded ones from the directory pointed to by
+`OPENAI_RECORDING_DIR` (default `openai_records`).
+
 ## Frontend Development
 
 The web UI frontend is a React application built with Vite. It lives in the web/frontend
