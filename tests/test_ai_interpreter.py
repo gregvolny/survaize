@@ -1,6 +1,7 @@
 """Test that the AIQuestionnaireInterpreter correctly retries validation failures."""
 
 import json
+import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -156,3 +157,27 @@ def test_interpret_reports_progress(mock_document_two_pages: ScannedQuestionnair
         assert progress[0] == 0
         assert progress[-1] == 100
         assert len(progress) == 3
+
+
+def test_interpret_logs_usage(
+    mock_document: ScannedQuestionnaire, mock_llm_config: LLMConfig, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Verify interpret logs token usage when provided by the API."""
+    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+        mock_client = MagicMock()
+        mock_openai.return_value = mock_client
+
+        completion = MagicMock()
+        completion.choices[0].message.content = json.dumps({"title": "Survey", "id_fields": ["id"], "sections": []})
+        usage = MagicMock()
+        usage.prompt_tokens = 3
+        usage.completion_tokens = 4
+        completion.usage = usage
+
+        mock_client.chat.completions.create.return_value = completion
+
+        interpreter = AIQuestionnaireInterpreter(mock_llm_config)
+        caplog.set_level(logging.INFO)
+        interpreter.interpret(mock_document)
+
+        assert any("Token usage - prompt: 3" in r.getMessage() and "total: 7" in r.getMessage() for r in caplog.records)

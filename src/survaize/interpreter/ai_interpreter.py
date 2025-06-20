@@ -4,6 +4,7 @@ import base64
 import json
 import logging
 from collections.abc import Callable, Iterable
+from dataclasses import dataclass
 from io import BytesIO
 from typing import TypeVar
 
@@ -23,6 +24,22 @@ from survaize.model.questionnaire import PartialQuestionnaire, Questionnaire, me
 logger = logging.getLogger(__name__)
 
 STRUCTURED_RESPONSE_TYPE = TypeVar("STRUCTURED_RESPONSE_TYPE", bound="BaseModel")
+
+
+@dataclass
+class LLMUsage:
+    """Token usage information."""
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+
+    def add(self, prompt: int, completion: int) -> None:
+        self.prompt_tokens += prompt
+        self.completion_tokens += completion
+
+    @property
+    def total_tokens(self) -> int:
+        return self.prompt_tokens + self.completion_tokens
 
 
 class AIQuestionnaireInterpreter:
@@ -67,6 +84,7 @@ class AIQuestionnaireInterpreter:
 
         # Process each page
         total_pages = len(scanned_document.pages)
+        total_usage = LLMUsage()
 
         for i, (page, text) in enumerate(
             zip(scanned_document.pages, scanned_document.extracted_text, strict=False),
@@ -78,21 +96,27 @@ class AIQuestionnaireInterpreter:
 
             logger.info(f"Examining page {i}/{total_pages}")
             if i == 1:
-                # Process the first page
-                current_state = self._process_first_page(page, text)
+                questionnaire, usage = self._process_first_page(page, text)
+                current_state = questionnaire
             else:
                 assert current_state is not None
-                # Process subsequent pages
-                partial_questionnaire = self._process_subsequent_page(page, text, i, current_state)
-                current_state = merge_questionnaires(current_state, partial_questionnaire)
+                partial, usage = self._process_subsequent_page(page, text, i, current_state)
+                current_state = merge_questionnaires(current_state, partial)
+            total_usage.add(usage.prompt_tokens, usage.completion_tokens)
 
         if current_state is None:
             raise ValueError("No valid questionnaire found in the document")
         if progress_callback:
             progress_callback(100, "Completed")
+        logger.info(
+            "Token usage - prompt: %s, completion: %s, total: %s",
+            total_usage.prompt_tokens,
+            total_usage.completion_tokens,
+            total_usage.total_tokens,
+        )
         return current_state
 
-    def _process_first_page(self, image: Image.Image, ocr_text: str) -> Questionnaire:
+    def _process_first_page(self, image: Image.Image, ocr_text: str) -> tuple[Questionnaire, LLMUsage]:
         """Process the first page of the questionnaire.
 
         Args:
@@ -100,7 +124,7 @@ class AIQuestionnaireInterpreter:
             ocr_text: OCR extracted text from the page
 
         Returns:
-            Questionnaire: A structured representation of the questionnaire
+            Tuple containing the structured questionnaire and token usage
 
         Raises:
             ValueError: If unable to interpret the questionnaire after max retry attempts
@@ -126,7 +150,7 @@ class AIQuestionnaireInterpreter:
         ocr_text: str,
         page_number: int,
         questionnaire_so_far: Questionnaire,
-    ) -> PartialQuestionnaire:
+    ) -> tuple[PartialQuestionnaire, LLMUsage]:
         """Process a single page of the questionnaire.
         This method is called for all pages after the first one.
 
@@ -137,7 +161,7 @@ class AIQuestionnaireInterpreter:
             questionnaire_so_far: The questionnaire compiled from previous pages
 
         Returns:
-            PartialQuestionnaire: A partial questionnaire containing only elements from this page
+            Tuple with the partial questionnaire from this page and token usage
 
         Raises:
             ValueError: If unable to interpret the page after max retry attempts
@@ -164,13 +188,13 @@ class AIQuestionnaireInterpreter:
 
     def _get_structured_llm_response(
         self, message: Iterable[ChatCompletionContentPartParam], response_type: type[STRUCTURED_RESPONSE_TYPE]
-    ) -> STRUCTURED_RESPONSE_TYPE:
+    ) -> tuple[STRUCTURED_RESPONSE_TYPE, LLMUsage]:
         """Get structured response from LLM by asking LLM to fix validation errors in a loop.
         Args:
             message: Message to send to the LLM
             response_type: Type of the expected structured response
         Returns:
-            Structured response of the specified type
+            Tuple of the structured response and token usage
         Raises:
             ValueError: If unable to validate the response after max retry attempts
         """
@@ -178,7 +202,7 @@ class AIQuestionnaireInterpreter:
         # Track conversation to maintain context during retries
         messages: list[ChatCompletionMessageParam] = [{"role": "user", "content": message}]
 
-        # Set max retries to avoid infinite loops
+        usage = LLMUsage()
         attempt = 0
 
         while True:
@@ -191,6 +215,12 @@ class AIQuestionnaireInterpreter:
                 response_format={"type": "json_object"},
             )
 
+            if getattr(response, "usage", None):
+                usage.add(
+                    getattr(response.usage, "prompt_tokens", 0) or 0,
+                    getattr(response.usage, "completion_tokens", 0) or 0,
+                )
+
             # Extract content
             response_str = response.choices[0].message.content
             if not response_str:
@@ -202,7 +232,7 @@ class AIQuestionnaireInterpreter:
             try:
                 # Try to validate the response
                 validated_response = response_type.model_validate(json.loads(response_str))
-                return validated_response
+                return validated_response, usage
 
             except Exception as e:
                 if attempt >= self.max_retries:
