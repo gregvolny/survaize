@@ -378,7 +378,8 @@ class AIQuestionnaireInterpreter:
                 - Question ID (derived from the question, lowercase with underscores)
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**
+                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**.
+                  **Only use these exact values; do not create new question types.**
                 - Single_select and multi_select questions will have a list of responses; for those questions
                   extract the code and label for each response. **Every option needs a code; use numbers if missing.**
                 - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
@@ -435,7 +436,8 @@ class AIQuestionnaireInterpreter:
                 - Question ID (derived from the question, lowercase with underscores)
                 - Text of the question to be read to the respondent
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**
+                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**.
+                  **Only use these exact values; do not create new question types.**
                 - Single_select and multi_select questions will have a list of responses; for those questions
                   extract the code and label for each response. **Every option needs a code; use numbers if missing.**
                 - Numeric questions will have a minimum maximum value which can be inferred. For the maximum, 
