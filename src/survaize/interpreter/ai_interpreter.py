@@ -15,7 +15,11 @@ from openai.types.chat import (
 from PIL import Image
 from pydantic import BaseModel
 
-from survaize.config.llm_config import LLMConfig, OpenAIProviderType
+from survaize.config.llm_config import LLMConfig
+from survaize.interpreter.openai_recorder import (
+    RecordingClient,
+    create_openai_client,
+)
 from survaize.interpreter.scanned_questionnaire import ScannedQuestionnaire
 from survaize.model.questionnaire import PartialQuestionnaire, Questionnaire, merge_questionnaires
 
@@ -35,18 +39,7 @@ class AIQuestionnaireInterpreter:
             llm_config: Configuration/keys for the OpenAI API
         """
         self.llm_config: LLMConfig = llm_config
-        if llm_config.provider == OpenAIProviderType.AZURE:
-            assert llm_config.api_url is not None
-            self.client: OpenAI | AzureOpenAI = AzureOpenAI(
-                api_key=llm_config.api_key,
-                api_version=llm_config.api_version,
-                azure_endpoint=llm_config.api_url,
-            )
-        else:  # default to openai client
-            self.client = OpenAI(
-                api_key=llm_config.api_key,
-                base_url=llm_config.api_url,
-            )
+        self.client: AzureOpenAI | OpenAI | RecordingClient = create_openai_client(llm_config)
         self.max_retries: int = max_retries
 
     def interpret(

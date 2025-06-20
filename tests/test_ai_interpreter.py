@@ -47,10 +47,10 @@ def mock_llm_config() -> LLMConfig:
 
 def test_first_page_retry_validation_error(mock_document: ScannedQuestionnaire, mock_llm_config: LLMConfig):
     """Test that _process_first_page retries when Pydantic validation fails."""
-    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+    with patch("survaize.interpreter.ai_interpreter.create_openai_client") as mock_factory:
         # Set up the mock for OpenAI client
         mock_client = MagicMock()
-        mock_openai.return_value = mock_client
+        mock_factory.return_value = mock_client
 
         # Configure mock responses - first with invalid JSON, then with valid JSON
         mock_completion1 = MagicMock()
@@ -94,10 +94,10 @@ def test_first_page_retry_validation_error(mock_document: ScannedQuestionnaire, 
 
 def test_max_retries_exceeded(mock_document: ScannedQuestionnaire, mock_llm_config: LLMConfig):
     """Test that _process_first_page raises an error after max retries."""
-    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+    with patch("survaize.interpreter.ai_interpreter.create_openai_client") as mock_factory:
         # Set up the mock for OpenAI client
         mock_client = MagicMock()
-        mock_openai.return_value = mock_client
+        mock_factory.return_value = mock_client
 
         # Configure mock response with always-invalid JSON
         mock_completion = MagicMock()
@@ -127,9 +127,9 @@ def test_max_retries_exceeded(mock_document: ScannedQuestionnaire, mock_llm_conf
 
 def test_interpret_reports_progress(mock_document_two_pages: ScannedQuestionnaire, mock_llm_config: LLMConfig) -> None:
     """Verify interpret emits progress updates for each page."""
-    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+    with patch("survaize.interpreter.ai_interpreter.create_openai_client") as mock_factory:
         mock_client = MagicMock()
-        mock_openai.return_value = mock_client
+        mock_factory.return_value = mock_client
 
         completion1 = MagicMock()
         completion1.choices[0].message.content = json.dumps(
