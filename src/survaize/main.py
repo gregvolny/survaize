@@ -31,7 +31,7 @@ OutputFormat = Literal["json", "cspro"]
 def configure_logfire():
     # Token is read from LOGFIRE_TOKEN environment variable by default
     # and is disabled if not present.
-    logfire.configure(send_to_logfire='if-token-present')
+    logfire.configure(send_to_logfire="if-token-present")
     logfire.instrument_openai()
 
 

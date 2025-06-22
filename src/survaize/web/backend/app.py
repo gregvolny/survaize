@@ -1,5 +1,4 @@
 import logging
-import os
 from importlib import resources
 
 import logfire

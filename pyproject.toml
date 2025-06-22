@@ -174,3 +174,6 @@ testpaths = [
 ]
 norecursedirs = []
 filterwarnings = []
+
+[tool.logfire]
+ignore_no_config=true 
