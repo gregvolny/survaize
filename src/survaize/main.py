@@ -93,7 +93,7 @@ def convert(
     """Convert a questionnaire to the specified format."""
 
     configure_logfire()
-    logfire.info('Start convert', input_file=input_file, output_file=output_file, output_format=output_format)
+    logfire.info("Start convert", input_file=input_file, output_file=output_file, output_format=output_format)
 
     if api_provider == OpenAIProviderType.AZURE:
         if not api_url:
