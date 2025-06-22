@@ -111,6 +111,15 @@ class Section(BaseModel):
     occurrences: int = Field(..., description="Maximum number of times the section is asked")
 
 
+class SectionFragment(BaseModel):
+    """Minimal representation of a section that may continue on the next page."""
+
+    id: str = Field(..., description="Unique identifier for the section")
+    number: str = Field(..., description="The section number")
+    title: str = Field(..., description="Title of the section")
+    questions: list[Question] = Field(..., description="Questions at the end of the page that may continue")
+
+
 class Questionnaire(BaseModel):
     """Top-level questionnaire structure."""
 
@@ -121,12 +130,24 @@ class Questionnaire(BaseModel):
         description="List of field ids used to uniquely identify the unit of observation (household, individual, etc.)",
     )
     sections: list[Section] = Field(..., description="Sections in the questionnaire")
+    trailing_sections: list[SectionFragment] = Field(
+        default_factory=list,
+        description=(
+            "Sections that may continue onto the next page. Only include the last questions from the current page."
+        ),
+    )
 
 
 class PartialQuestionnaire(BaseModel):
     """Incomplete questionnaire, subset of a full questionnaire - used to represent a single page."""
 
     sections: list[Section] = Field(..., description="Sections in the questionnaire")
+    trailing_sections: list[SectionFragment] = Field(
+        default_factory=list,
+        description=(
+            "Sections that may continue onto the next page. Only include the last questions from the current page."
+        ),
+    )
 
 
 def merge_questionnaires(base: Questionnaire, partial: PartialQuestionnaire) -> Questionnaire:

@@ -23,7 +23,12 @@ from survaize.interpreter.openai_recorder import (
     create_openai_client,
 )
 from survaize.interpreter.scanned_questionnaire import ScannedQuestionnaire
-from survaize.model.questionnaire import PartialQuestionnaire, Questionnaire, merge_questionnaires
+from survaize.model.questionnaire import (
+    PartialQuestionnaire,
+    Questionnaire,
+    SectionFragment,
+    merge_questionnaires,
+)
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -81,6 +86,7 @@ class AIQuestionnaireInterpreter:
         total_pages = len(scanned_document.pages)
         total_usage = LLMUsage()
 
+        context: list[SectionFragment] = []
         for i, (page, text) in enumerate(
             zip(scanned_document.pages, scanned_document.extracted_text, strict=False),
             1,
@@ -92,10 +98,12 @@ class AIQuestionnaireInterpreter:
             logger.info(f"Examining page {i}/{total_pages}")
             if i == 1:
                 questionnaire, usage = self._process_first_page(page, text)
+                context = questionnaire.trailing_sections
                 current_state = questionnaire
             else:
                 assert current_state is not None
-                partial, usage = self._process_subsequent_page(page, text, i, current_state)
+                partial, usage = self._process_subsequent_page(page, text, i, context)
+                context = partial.trailing_sections
                 current_state = merge_questionnaires(current_state, partial)
             total_usage.add(usage.prompt_tokens, usage.completion_tokens)
 
@@ -144,7 +152,7 @@ class AIQuestionnaireInterpreter:
         image: Image.Image,
         ocr_text: str,
         page_number: int,
-        questionnaire_so_far: Questionnaire,
+        previous_context: list[SectionFragment],
     ) -> tuple[PartialQuestionnaire, LLMUsage]:
         """Process a single page of the questionnaire.
         This method is called for all pages after the first one.
@@ -153,7 +161,7 @@ class AIQuestionnaireInterpreter:
             image: PIL Image of the page
             ocr_text: OCR extracted text from the page
             page_number: Current page number
-            questionnaire_so_far: The questionnaire compiled from previous pages
+            previous_context: Trailing sections from the previous page
 
         Returns:
             Tuple with the partial questionnaire from this page and token usage
@@ -166,7 +174,10 @@ class AIQuestionnaireInterpreter:
 
         # Initialize conversation
         prompt = self._create_vision_prompt(page_number)
-        questionnaire_json = questionnaire_so_far.model_dump_json(indent=2, exclude_none=True)
+        context_json = json.dumps(
+            [section.model_dump(exclude_none=True) for section in previous_context],
+            indent=2,
+        )
         message: Iterable[ChatCompletionContentPartParam] = [
             {"type": "text", "text": prompt},
             {
@@ -176,7 +187,7 @@ class AIQuestionnaireInterpreter:
             {"type": "text", "text": f"OCR Text:\n{ocr_text}"},
             {
                 "type": "text",
-                "text": f"Questionnaire from previous pages:\n{questionnaire_json}",
+                "text": f"previous_page_context:\n{context_json}",
             },
         ]
         return self._get_structured_llm_response(message, PartialQuestionnaire)
@@ -374,14 +385,15 @@ class AIQuestionnaireInterpreter:
         """
 
         if page_number == 1:
-            return f"""You are an expert in implementing CAPI survey instruments for surveys. Your job is to read a 
+            return f"""You are an expert in implementing CAPI survey instruments for surveys. Your job is to read a
             paper questionnaire and convert it to a structured format that can be used for further processing.
                     
             Given the first page of a questionnaire as an image, along with the OCR text from the page, produce a JSON
             representation of the page of the questionnaire that follows the given schema.
             
             IMPORTANT: The JSON you produce must be a valid Questionnaire object containing all sections and questions
-            found on the first page.
+            found on the first page. Also include a `trailing_sections` field listing any sections and last question(s)
+            that may continue on the next page.
 
             Proceed as follows:
 
@@ -431,15 +443,17 @@ class AIQuestionnaireInterpreter:
             ```
             """
         else:
-            return f"""You are an expert in implementing CAPI survey instruments for surveys. Your job is to read a 
+            return f"""You are an expert in implementing CAPI survey instruments for surveys. Your job is to read a
             paper questionnaire and convert it to a structured format that can be used for further processing.
-                    
+
             Given page {page_number} of a questionnaire as an image, along with the OCR text from the page, produce a
             JSON representation of just the sections and questions found on this page.
-            
-            IMPORTANT: The JSON you produce must be a valid PartialQuestionnaire object containing only the sections 
+
+            IMPORTANT: The JSON you produce must be a valid PartialQuestionnaire object containing only the sections
             and questions found on this page. If a section continues from a previous page, include only the new
-            questions found on this page.
+            questions found on this page. Use the `previous_page_context` provided to continue any sections from the
+            prior page. Also identify the section(s) and last question(s) on this page that may continue onto the next
+            page and return them in a `trailing_sections` field.
 
             Proceed as follows:
 
