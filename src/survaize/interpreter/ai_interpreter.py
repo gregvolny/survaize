@@ -484,9 +484,10 @@ class AIQuestionnaireInterpreter:
 
             IMPORTANT: The JSON you produce must be a valid PartialQuestionnaire object containing only the sections
             and questions found on this page. If a section continues from a previous page, include only the new
-            questions found on this page. Use the `previous_page_context` provided to continue any sections from the
-            prior page. Also identify the section(s) and last question(s) on this page that may continue onto the next
-            page and return them in a `trailing_sections` field using only the section id and question ids.
+            questions found on this page and use the `previous_page_context` to resume it. Identify any sections with
+            questions that appear incomplete or are likely to continue on the next page—usually the last question in
+            each column—and list their section id and question id(s) in a `trailing_sections` field. Do not include
+            questions that are fully complete.
 
             Proceed as follows:
 
