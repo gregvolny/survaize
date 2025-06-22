@@ -1,6 +1,8 @@
 import logging
 from importlib import resources
+import os
 
+import logfire
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -20,6 +22,10 @@ def create_app() -> FastAPI:
         Configured FastAPI application
     """
     app = FastAPI(title="Survaize API")
+
+
+    if os.getenv("LOGFIRE_WRITE_TOKEN"):
+        logfire.instrument_fastapi(app, capture_headers=True)
 
     # Include API routes
     app.include_router(api_router)

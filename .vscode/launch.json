@@ -24,7 +24,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/survaize/main.py",
             "console": "integratedTerminal",
-            "args": ["ui"]
+            "args": ["ui", "--no-browser"]
         }
     ]
 }
