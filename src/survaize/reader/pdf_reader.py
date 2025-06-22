@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import IO
 
 import cv2
+import logfire
 import numpy as np
 import pdf2image
 import pytesseract
@@ -30,6 +31,7 @@ class PDFReader:
         """
         self.interpreter: AIQuestionnaireInterpreter = interpreter
 
+    @logfire.instrument(extract_args=False)
     def read(
         self,
         file: IO[bytes],

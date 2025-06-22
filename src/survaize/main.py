@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Literal
 
 import click
+import logfire
 from dotenv import load_dotenv
 from rich.console import Console
 
@@ -25,6 +26,13 @@ logger = logging.getLogger(__name__)
 # For console UI
 console = Console()
 OutputFormat = Literal["json", "cspro"]
+
+
+def configure_logfire():
+    # Token is read from LOGFIRE_TOKEN environment variable by default
+    # and is disabled if not present.
+    logfire.configure(send_to_logfire="if-token-present")
+    logfire.instrument_openai()
 
 
 @click.group()
@@ -83,6 +91,10 @@ def convert(
     api_model: str,
 ) -> None:
     """Convert a questionnaire to the specified format."""
+
+    configure_logfire()
+    logfire.info("Start convert", input_file=input_file, output_file=output_file, output_format=output_format)
+
     if api_provider == OpenAIProviderType.AZURE:
         if not api_url:
             raise click.UsageError(
@@ -177,6 +189,8 @@ def ui(
     no_browser: bool,
 ) -> None:
     """Start the Survaize web application server."""
+    configure_logfire()
+
     try:
         if api_provider == OpenAIProviderType.AZURE:
             if not api_url:

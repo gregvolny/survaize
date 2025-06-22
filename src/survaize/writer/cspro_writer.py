@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 from typing import Literal
 
+import logfire
+
 from survaize.cspro.dictionary import (
     CSProDictionary,
     DictionaryIds,
@@ -42,6 +44,7 @@ logger = logging.getLogger(__name__)
 class CSProWriter:
     """Generates CSPro format output from questionnaires."""
 
+    @logfire.instrument()
     def write(self, questionnaire: Questionnaire, output_path: Path):
         """Generate a CSPro application from a questionnaire.
 

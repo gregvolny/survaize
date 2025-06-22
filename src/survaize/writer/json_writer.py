@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path
 
+import logfire
+
 from survaize.model.questionnaire import Questionnaire
 
 logger = logging.getLogger(__name__)
@@ -9,6 +11,7 @@ logger = logging.getLogger(__name__)
 class JSONWriter:
     """Generates JSON format output from questionnaires."""
 
+    @logfire.instrument()
     def write(self, questionnaire: Questionnaire, output_path: Path):
         """Generate a JSON representation of a questionnaire.
 
