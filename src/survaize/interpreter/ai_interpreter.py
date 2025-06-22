@@ -380,7 +380,7 @@ class AIQuestionnaireInterpreter:
                     }
                 ],
                 "trailing_sections": [
-                    {"id": "section_a", "question_ids": ["birth_date", "gender"]}
+                    {"id": "section_a", "question_ids": ["gender"]}
                 ]
             }
         """
@@ -422,20 +422,23 @@ class AIQuestionnaireInterpreter:
             paper questionnaire and convert it to a structured format that can be used for further processing.
                     
             Given the first page of a questionnaire as an image, along with the OCR text from the page, produce a JSON
-            representation of the page of the questionnaire that follows the given schema.
+            representation of the page of the questionnaire that follows the example. Include all sections and questions
+            found on this page in normal reading order. If the order is unclear visually, use the section and question
+            numbers to determine the order.
             
-            IMPORTANT: The JSON you produce must be a valid Questionnaire object containing all sections and questions
-            found on the first page. Also include a `trailing_sections` field listing any sections that may continue on
-            the next page with the ids of the last question(s) on this page.
+            Include a `trailing_sections` field listing the ids of any sections/questions that may continue on
+            the next page. These are sections with questions that appear incomplete, are part of a sequence or have
+            been split across pages, usually the last question in each column.
 
             Proceed as follows:
 
-            1. Identify the title of the survey
-            2. Identify any description of the survey
+            1. Identify the title of the survey (required)
+            2. Identify any description of the survey (required)
             3. Identify the sections of the survey and extract the following information:
-                - Section ID (derived from the title, lowercase with underscores)
-                - Section number
-                - Section title
+                - Section ID - derived from the title, lowercase with underscores (required)
+                - Section number (required, number with sequential capital letters if missing, however if previous 
+                  sections are numbered and this one is not, it is probably part of a previous section)
+                - Section title (required)
                 - Section description (if present)
                 - Universe (which respondent the section is intended for, if present)
                 - Occurrences (how many times the section is repeated. Repeated sections are often represented as
@@ -444,11 +447,11 @@ class AIQuestionnaireInterpreter:
                   for each member of the household)
                   **Always include this field with an integer value, even if it must be estimated.**
             4. In each section identify the individual questions and extract the following information:
-                - Question number
-                - Question ID (derived from the question, lowercase with underscores)
-                - Text of the question to be read to the respondent
+                - Question number (required, number sequentially if missing)
+                - Question ID - derived from the question, lowercase with underscores (required)
+                - Text of the question to be read to the respondent (required)
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**.
+                - Question type (either single_select, multi_select, numeric, text, date, location) (required).
                   **Only use these exact values; do not create new question types.**
                 - Single_select and multi_select questions will have a list of responses; for those questions
                   extract the code and label for each response. **Every option needs a code; use numbers if missing.**
@@ -467,8 +470,8 @@ class AIQuestionnaireInterpreter:
                questionnaire. They are usually at the start of the questionnaire and combined will uniquely identify
                the questionnaire. They are often geographic identifiers, household identifiers, or respondent
                identifiers or codes from the sample.
-            6. Ensure every object includes all required properties as shown in the schema example. Provide a best
-               guess or placeholder when the value is not explicit rather than omitting the field.
+            6. Ensure every object includes all required properties. Provide a best guess or placeholder when the 
+               value is not explicit rather than omitting the field.
 
             Here is an example of the output you should produce:
             ```json
@@ -480,36 +483,38 @@ class AIQuestionnaireInterpreter:
             paper questionnaire and convert it to a structured format that can be used for further processing.
 
             Given page {page_number} of a questionnaire as an image, along with the OCR text from the page, produce a
-            JSON representation of just the sections and questions found on this page.
-
-            IMPORTANT: The JSON you produce must be a valid PartialQuestionnaire object containing only the sections
-            and questions found on this page. If a section continues from a previous page, include only the new
-            questions found on this page and use the `previous_page_context` to resume it. Identify any sections with
-            questions that appear incomplete or are likely to continue on the next page—usually the last question in
-            each column—and list their section id and question id(s) in a `trailing_sections` field. Do not include
-            questions that are fully complete.
+            JSON representation of just the sections and questions found on this page that follows the example. 
+            Include all sections and questions found on this page in normal reading order. If the order is unclear 
+            visually, use the section and question numbers to determine the order.
+                        
+            Also include a `trailing_sections` field listing the ids of any sections/questions that may continue on
+            the next page. These are sections with questions that appear incomplete, are part of a sequence or have
+            been split across pages, usually the last question in each column.
 
             Proceed as follows:
 
             1. Identify any new sections that begin on this page and extract the following information:
-                - Section ID (derived from the title, lowercase with underscores)
-                - Section number
-                - Section title
+                - Section ID - derived from the title, lowercase with underscores (required)
+                - Section number (required, number with sequential capital letters if missing, however if previous 
+                  sections are numbered and this one is not, it is probably part of a previous section)
+                - Section title (required)
                 - Section description (if present)
                 - Universe (which respondent the section is intended for, if present)
                 - Occurrences (how many times the section is repeated. Repeated sections are often represented as
-                  tables with multiple rows in which case count the rows, otherwise estimate based on the
-                  topic/questions in the section e.g. if the section is about household members, it may be repeated
+                  tables with multiple rows in which case count the rows, otherwise estimate based on the 
+                  topic/questions in the section e.g. if the section is about household members, it may be repeated 
                   for each member of the household)
                   **Always include this field with an integer value, even if it must be estimated.**
             2. For questions that belong to a section from a previous page, include that section with its ID but only
-               the new questions.
+               the new questions. The `previous_page_context` contains the last sections and questions from the 
+               previous page that may continue on this page.
+
             3. Identify the individual questions and extract the following information:
-                - Question number
-                - Question ID (derived from the question, lowercase with underscores)
-                - Text of the question to be read to the respondent
+                - Question number (required, number sequentially if missing)
+                - Question ID - derived from the question, lowercase with underscores (required)
+                - Text of the question to be read to the respondent (required)
                 - Instructions to the interviewer (if present)
-                - Question type (either single_select, multi_select, numeric, text, date, location) **(required)**.
+                - Question type (either single_select, multi_select, numeric, text, date, location) (required).
                   **Only use these exact values; do not create new question types.**
                 - Single_select and multi_select questions will have a list of responses; for those questions
                   extract the code and label for each response. **Every option needs a code; use numbers if missing.**
@@ -522,10 +527,10 @@ class AIQuestionnaireInterpreter:
                   question. If there is no information to infer the minimum and maximum values, omit them from the 
                   output.
                 - Text questions will have a maximum length which can be inferred based on the number of boxes next to
-                  or under the question, if there is no information to infer the maximum length, omit the field from the
-                  output
-            4. Ensure every object includes all required properties as shown in the schema example. Provide a best
-               guess or placeholder when the value is not explicit rather than omitting the field.
+                  or under the question, if there is no information to infer the maximum length, omit the field from 
+                  the output
+            4. Ensure every object includes all required properties. Provide a best guess or placeholder when the value 
+               is not explicit rather than omitting the field.
 
             Here is an example of the output you should produce:
             ```json
