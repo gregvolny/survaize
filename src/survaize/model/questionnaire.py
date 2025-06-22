@@ -111,13 +111,20 @@ class Section(BaseModel):
     occurrences: int = Field(..., description="Maximum number of times the section is asked")
 
 
+class TrailingSectionRef(BaseModel):
+    """Reference to a section that continues on the next page."""
+
+    id: str = Field(..., description="Unique identifier for the section")
+    question_ids: list[str] = Field(..., description="IDs of the last question(s) on this page that may continue")
+
+
 class SectionFragment(BaseModel):
-    """Minimal representation of a section that may continue on the next page."""
+    """Full trailing section used when providing context to the LLM."""
 
     id: str = Field(..., description="Unique identifier for the section")
     number: str = Field(..., description="The section number")
     title: str = Field(..., description="Title of the section")
-    questions: list[Question] = Field(..., description="Questions at the end of the page that may continue")
+    questions: list[Question] = Field(..., description="Last question(s) on the page that may continue")
 
 
 class Questionnaire(BaseModel):
@@ -130,7 +137,7 @@ class Questionnaire(BaseModel):
         description="List of field ids used to uniquely identify the unit of observation (household, individual, etc.)",
     )
     sections: list[Section] = Field(..., description="Sections in the questionnaire")
-    trailing_sections: list[SectionFragment] = Field(
+    trailing_sections: list[TrailingSectionRef] = Field(
         default_factory=list,
         description=(
             "Sections that may continue onto the next page. Only include the last questions from the current page."
@@ -142,7 +149,7 @@ class PartialQuestionnaire(BaseModel):
     """Incomplete questionnaire, subset of a full questionnaire - used to represent a single page."""
 
     sections: list[Section] = Field(..., description="Sections in the questionnaire")
-    trailing_sections: list[SectionFragment] = Field(
+    trailing_sections: list[TrailingSectionRef] = Field(
         default_factory=list,
         description=(
             "Sections that may continue onto the next page. Only include the last questions from the current page."

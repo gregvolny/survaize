@@ -74,6 +74,7 @@ def test_first_page_retry_validation_error(mock_document: ScannedQuestionnaire, 
                 "sections": [
                     {"id": "section_a", "number": "A", "title": "Test Section", "questions": [], "occurrences": 1}
                 ],
+                "trailing_sections": [],
             }
         )
 
@@ -138,11 +139,12 @@ def test_interpret_reports_progress(mock_document_two_pages: ScannedQuestionnair
                 "title": "Test Survey",
                 "id_fields": ["id"],
                 "sections": [],
+                "trailing_sections": [],
             }
         )
 
         completion2 = MagicMock()
-        completion2.choices[0].message.content = json.dumps({"sections": []})
+        completion2.choices[0].message.content = json.dumps({"sections": [], "trailing_sections": []})
 
         mock_client.chat.completions.create.side_effect = [completion1, completion2]
 
@@ -168,7 +170,9 @@ def test_interpret_logs_usage(
         mock_factory.return_value = mock_client
 
         completion = MagicMock()
-        completion.choices[0].message.content = json.dumps({"title": "Survey", "id_fields": ["id"], "sections": []})
+        completion.choices[0].message.content = json.dumps(
+            {"title": "Survey", "id_fields": ["id"], "sections": [], "trailing_sections": []}
+        )
         usage = MagicMock()
         usage.prompt_tokens = 3
         usage.completion_tokens = 4

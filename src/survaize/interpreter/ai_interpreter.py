@@ -26,7 +26,9 @@ from survaize.interpreter.scanned_questionnaire import ScannedQuestionnaire
 from survaize.model.questionnaire import (
     PartialQuestionnaire,
     Questionnaire,
+    Section,
     SectionFragment,
+    TrailingSectionRef,
     merge_questionnaires,
 )
 
@@ -98,12 +100,12 @@ class AIQuestionnaireInterpreter:
             logger.info(f"Examining page {i}/{total_pages}")
             if i == 1:
                 questionnaire, usage = self._process_first_page(page, text)
-                context = questionnaire.trailing_sections
+                context = self._build_context(questionnaire.trailing_sections, questionnaire.sections)
                 current_state = questionnaire
             else:
                 assert current_state is not None
                 partial, usage = self._process_subsequent_page(page, text, i, context)
-                context = partial.trailing_sections
+                context = self._build_context(partial.trailing_sections, partial.sections)
                 current_state = merge_questionnaires(current_state, partial)
             total_usage.add(usage.prompt_tokens, usage.completion_tokens)
 
@@ -261,6 +263,31 @@ class AIQuestionnaireInterpreter:
 
                 logger.info(f"Validation failed, attempt {attempt}: {e}. Retrying...")
 
+    def _build_context(
+        self,
+        refs: list[TrailingSectionRef],
+        sections: list[Section],
+    ) -> list[SectionFragment]:
+        """Construct context fragments from trailing section references."""
+
+        sections_by_id = {section.id: section for section in sections}
+        fragments: list[SectionFragment] = []
+        for ref in refs:
+            section = sections_by_id.get(ref.id)
+            if not section:
+                continue
+            trailing_questions = [q for q in section.questions if q.id in ref.question_ids]
+            if trailing_questions:
+                fragments.append(
+                    SectionFragment(
+                        id=section.id,
+                        number=section.number,
+                        title=section.title,
+                        questions=trailing_questions,
+                    )
+                )
+        return fragments
+
     def _encode_image(self, image: Image.Image) -> str:
         """Encode a PIL image to base64.
 
@@ -351,6 +378,9 @@ class AIQuestionnaireInterpreter:
                             }
                         ]
                     }
+                ],
+                "trailing_sections": [
+                    {"id": "section_a", "question_ids": ["birth_date", "gender"]}
                 ]
             }
         """
@@ -380,6 +410,9 @@ class AIQuestionnaireInterpreter:
                             }
                         ]
                     }
+                ],
+                "trailing_sections": [
+                    {"id": "section_b", "question_ids": ["edu_level"]}
                 ]
             }
         """
@@ -392,8 +425,8 @@ class AIQuestionnaireInterpreter:
             representation of the page of the questionnaire that follows the given schema.
             
             IMPORTANT: The JSON you produce must be a valid Questionnaire object containing all sections and questions
-            found on the first page. Also include a `trailing_sections` field listing any sections and last question(s)
-            that may continue on the next page.
+            found on the first page. Also include a `trailing_sections` field listing any sections that may continue on
+            the next page with the ids of the last question(s) on this page.
 
             Proceed as follows:
 
@@ -453,7 +486,7 @@ class AIQuestionnaireInterpreter:
             and questions found on this page. If a section continues from a previous page, include only the new
             questions found on this page. Use the `previous_page_context` provided to continue any sections from the
             prior page. Also identify the section(s) and last question(s) on this page that may continue onto the next
-            page and return them in a `trailing_sections` field.
+            page and return them in a `trailing_sections` field using only the section id and question ids.
 
             Proceed as follows:
 
