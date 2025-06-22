@@ -2,12 +2,15 @@ import json
 from collections.abc import Callable
 from typing import IO
 
+import logfire
+
 from survaize.model.questionnaire import Questionnaire
 
 
 class JSONReader:
     """Read questionnaire from JSON file (Survaize JSON schema)."""
 
+    @logfire.instrument(extract_args=False)
     def read(
         self,
         file: IO[bytes],

@@ -29,10 +29,10 @@ OutputFormat = Literal["json", "cspro"]
 
 
 def configure_logfire():
-    token = os.getenv("LOGFIRE_WRITE_TOKEN")
-    if token:
-        logfire.configure(token=token)
-        logfire.instrument_openai()
+    # Token is read from LOGFIRE_TOKEN environment variable by default
+    # and is disabled if not present.
+    logfire.configure(send_to_logfire='if-token-present')
+    logfire.instrument_openai()
 
 
 @click.group()

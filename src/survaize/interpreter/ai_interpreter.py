@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from io import BytesIO
 from typing import TypeVar
 
+import logfire
 from openai import AzureOpenAI, OpenAI
 from openai.types.chat import (
     ChatCompletionContentPartParam,
@@ -59,6 +60,7 @@ class AIQuestionnaireInterpreter:
         self.client: AzureOpenAI | OpenAI | RecordingClient = create_openai_client(llm_config)
         self.max_retries: int = max_retries
 
+    @logfire.instrument(extract_args=False)
     def interpret(
         self,
         scanned_document: ScannedQuestionnaire,

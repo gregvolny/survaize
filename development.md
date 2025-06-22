@@ -73,6 +73,16 @@ source .venv/bin/activate
 
 See [uv docs](https://docs.astral.sh/uv/) for details.
 
+### Logfire
+If you want to use [Logfire](https://logfire.dev/) for logging, you can set the
+`LOGFIRE_TOKEN` environment variable to your Logfire API key. This will enable
+logging to Logfire, which can be useful for debugging and monitoring your application.
+Alternatively, you run `logfire auth` in the project directory to create a
+`.logfire/logfire_credentials.json` file with your API key.
+
+All FastAPI endpoints and LLM calls are automatically instrumented to send logs to Logfire.
+See the [Logfire docs](https://logfire.dev/docs) for more details on how to use it.
+
 ### Recording OpenAI Responses
 
 You can record or replay API calls made to the OpenAI client. Set
