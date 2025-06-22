@@ -163,9 +163,9 @@ def test_interpret_logs_usage(
     mock_document: ScannedQuestionnaire, mock_llm_config: LLMConfig, caplog: pytest.LogCaptureFixture
 ) -> None:
     """Verify interpret logs token usage when provided by the API."""
-    with patch("survaize.interpreter.ai_interpreter.OpenAI") as mock_openai:
+    with patch("survaize.interpreter.ai_interpreter.create_openai_client") as mock_factory:
         mock_client = MagicMock()
-        mock_openai.return_value = mock_client
+        mock_factory.return_value = mock_client
 
         completion = MagicMock()
         completion.choices[0].message.content = json.dumps({"title": "Survey", "id_fields": ["id"], "sections": []})
